@@ -39,6 +39,8 @@ class AuthController extends Controller
             'account_type'=>$request->account_type,
             'otp'=>$otp
         ]);
+        $user->account_type = $request->account_type;
+        $user->save();
 
 
         $details = array(
@@ -85,8 +87,9 @@ class AuthController extends Controller
                 'phone_number' => $request->phone_number,
                 'phone_number_type' => $request->phone_number_type,
                 'otp' => $otp,
-                'account_type'=>$request->account_type
             ]);
+            $user->account_type = $request->account_type;
+            $user->save();
 
             $restaurant = Restaurant::create([
                 'name'=> $request->restaurant_name,

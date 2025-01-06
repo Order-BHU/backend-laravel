@@ -39,6 +39,7 @@ class AuthController extends Controller
             'account_type'=>$request->account_type,
             'otp'=>$otp
         ]);
+        
         $user->account_type = $request->account_type;
         $user->save();
 

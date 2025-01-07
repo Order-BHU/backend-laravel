@@ -225,20 +225,23 @@ class AuthController extends Controller
 
             return response()->json([
             'message'=>"Logged in Successfully",
+            'id'=>$user->id,
             'name'=> $user->name,
             'account_type'=>$user->account_type,
             'token'=>$token
-        ],200);
+        ],200)->cookie('token', $token, 60, '/', null, true, true);;
     }
     else if($user->account_type ==  'restaurant'){
         $restaurant = Restaurant::where('user_id', $user->id)->first();
 
             return response()->json([
                 'message' => "Logged in Successfully",
-                'name' => $restaurant->name,
+                'id' => $user->id,
+                'owners_name'=>$user->name,
+                'restaurant_name' => $restaurant->name,
                 'account_type' => $user->account_type,
                 'token' => $token
-            ], 200);
+            ], 200)->cookie('token', $token, 60, '/', null, true, true);
         
         
     }

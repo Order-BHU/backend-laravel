@@ -20,12 +20,15 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
             Route::post('/login', 'AuthController@login');
             Route::post('/verify-user', 'AuthController@verifyUser');
             Route::post('/get-otp', 'AuthController@getOtp');
+            Route::get('/categories', 'RestaurantController@categories');
             Route::get('/restaurant-list', 'RestaurantController@restaurantList');
+            Route::get('{restaurantId}/menu-list', 'RestaurantController@menuList');
+
 
 
 
             Route::middleware('auth:sanctum')->group(function () {
-                Route::get('/my-dashboard', 'ProfileController@myDashboard');
+                Route::post('{restaurantId}/add-menu', 'RestaurantController@addMenu');
                 Route::post('/logout', 'AuthController@logout');
 
             });

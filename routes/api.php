@@ -29,6 +29,7 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
 
             Route::middleware('auth:sanctum')->group(function () {
                 Route::post('{restaurantId}/add-menu', 'RestaurantController@addMenu');
+                Route::post('{menuId}/edit-menu', 'RestaurantController@editMenu');
                 Route::post('/logout', 'AuthController@logout');
 
             });

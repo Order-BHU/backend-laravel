@@ -86,4 +86,57 @@ class RestaurantController extends Controller
 
 
     }
+
+    public function editMenu(Request $request,$menuId){
+        
+         if($request->user()->account_type == 'restaurant'){
+            $restaurant = Restaurant::where('user_id',$request->user()->id)->first();
+
+            if($request->user()->id != $restaurant->user_id)
+            {
+                return response()->json([
+                    'message'=>"Your not the restaurant owner"
+                ]);
+            }
+        
+        // Find the menu by ID
+        $menu = Menu::where('id',$menuId)->first();
+
+            // Check if the menu exists
+            if (!$menu) {
+                return response()->json([
+                    'message' => 'Menu not found.'
+                ], 404);
+            }
+
+            // Validate only provided fields
+            $validatedData = $request->validate([
+                'name' => 'nullable|string|max:255',
+                'description' => 'nullable|string',
+                'price' => 'nullable|numeric',
+                'category_id' => 'nullable|exists:categories,id',
+                'image' => 'nullable|image|mimes:jpg,png,jpeg,gif,svg',
+            ]);
+
+            // Update only the fields that exist in the validated data
+            foreach ($validatedData as $key => $value) {
+                if ($key === 'image' && $request->hasFile('image')) {
+                    // Handle image upload
+                    $menu->image = $request->file('image')->store('image', 'public');
+                } else if($key) {
+                    // Update other fields
+                    $menu->$key = $value;
+                }
+            }
+
+        // Save the updated menu
+        $menu->save();
+
+        // Return a success response
+        return response()->json([
+            'message' => 'Menu updated successfully!',
+            'menu' => $menu
+        ]);
+    }
+    }
 }

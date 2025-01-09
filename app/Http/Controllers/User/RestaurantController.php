@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Menu;
 use App\Models\User;
 use App\Models\Category;
+use App\Models\Order;
 use App\Models\Restaurant;
 use Illuminate\Http\Request;
 
@@ -138,5 +139,84 @@ class RestaurantController extends Controller
             'menu' => $menu
         ]);
     }
+    }
+
+    public function myOrders(Request $request, $orderType){
+
+       
+        // Checks the kind of user
+          if($request->user()->account_type == 'restaurant'){
+            $restaurant = Restaurant::where('user_id',$request->user()->id)->first();
+
+            // Checks if the user owns the restaurant
+            if($request->user()->id != $restaurant->user_id)
+            {
+                return response()->json([
+                    'message'=>"Your not the restaurant owner"
+                ]);
+            }
+            
+            if($orderType == 'pending'){
+            $orders = Order::where('restaurant_id', $restaurant->id)
+            ->where('status', 'pending')->get();
+
+            return response()->json([
+                'orders'=> $orders,
+                ],200);
+
+            } else if($orderType == 'history'){
+                $orders = Order::where('restaurant_id', $restaurant->id)
+                ->get();
+
+                return response()->json([
+                    'orders'=> $orders,
+                ],200);
+            }
+            else{
+                return response()->json([
+                   'message'=>"Invalid order type"
+                ],500);
+            }
+           
+
+        }else if($request->user()->account_type == 'customer'){
+            $user = User::where('id', $request->user()->id)->first();
+            if ($orderType == 'pending') {
+                $orders = Order::where('user_id', $user->id)
+                    ->where('status', 'pending')->first();
+
+                return response()->json([
+                    'orders' => $orders,
+                ], 200);
+
+            } else if ($orderType == 'history') {
+                $orders = Order::where('user_id', $user->id)
+                    ->where('status', 'pending')->get();
+
+                    $ordersArray = [];
+                    foreach ($orders as $order) {
+                        $restaurant = Restaurant::findByID($order->restaurant_id);
+
+                        $ordersArray[] = [
+                            'order_id' => $order->id,
+                            'restaurant_name' => $restaurant->name,
+                            'items' => $order->items,
+                            'total' => $order->total,
+                            'order_date' => $order->order_date
+                        ];
+                        array_push($ordersArray, $restaurant);
+
+                    }
+                return response()->json([
+                    'orders' => $ordersArray,
+                ], 200);
+            } else {
+                return response()->json([
+                    'message' => "Invalid order type"
+                ], 500);
+            }
+
+        }
+
     }
 }

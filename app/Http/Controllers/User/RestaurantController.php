@@ -7,6 +7,7 @@ use App\Models\Menu;
 use App\Models\User;
 use App\Models\Category;
 use App\Models\Order;
+use App\Models\Cart;
 use App\Models\Restaurant;
 use Illuminate\Http\Request;
 
@@ -141,6 +142,7 @@ class RestaurantController extends Controller
     }
     }
 
+    
     public function myOrders(Request $request, $orderType){
 
        

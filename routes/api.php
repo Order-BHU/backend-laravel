@@ -28,8 +28,11 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
 
 
 
+
             Route::middleware('auth:sanctum')->group(function () {
                 Route::post('{restaurantId}/add-menu', 'RestaurantController@addMenu');
+                Route::post('{menuId}/{quantity}/add-to-cart', 'CartController@addToCart');
+                Route::post('/view-cart', 'CartController@');
                 Route::post('{menuId}/edit-menu', 'RestaurantController@editMenu');
                 Route::get('{orderType}/my-orders', 'RestaurantController@myOrders');
                 Route::post('/logout', 'AuthController@logout');

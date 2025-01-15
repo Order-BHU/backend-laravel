@@ -202,7 +202,12 @@ class AuthController extends Controller
         ]);
 
         $user = User::where('email', $request->email)->first();
-        
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'User not registered, Please Login',
+            ], 401);
+        }
         // User not yet verified
         if($user->activated != 1){        
             return response()->json([
@@ -215,7 +220,7 @@ class AuthController extends Controller
 
         // Attempts to log in user
         if (!Auth::attempt($credentials)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
+            return response()->json(['message' => 'Password not correct'], 401);
         }
 
         $user = $request->user();

@@ -242,6 +242,7 @@ class AuthController extends Controller
             return response()->json([
                 'message' => "Logged in Successfully",
                 'id' => $user->id,
+                'restaurant_id'=>$restaurant->id,
                 'owners_name'=>$user->name,
                 'restaurant_name' => $restaurant->name,
                 'account_type' => $user->account_type,

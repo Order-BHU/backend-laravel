@@ -8,4 +8,12 @@ class Cart extends Model
 {
 
 protected $table = 'cart';
+
+protected $fillable = [
+    'menu_id',
+    'quantity',
+    'user_id',
+    'order_id',
+    'restaurant_id'
+];
 }

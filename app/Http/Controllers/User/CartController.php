@@ -12,20 +12,47 @@ use App\Models\Restaurant;
 class CartController extends Controller
 {
 
-    public function addToCart(Request $request, $menuId, $quantity)
+    public function addToCart(Request $request, $menuId)
     {
 
-        $cart = Cart::create([
-            'menu_id' => $menuId,
-            'quantity' => $quantity,
-            'user_id' => $request->user()->id
-        ]);
+        $inCart = Cart::where('menu_id',$menuId)->first();
 
-
+        if(!$inCart){
+            $cart = Cart::create([
+                'menu_id' => $menuId,
+                'quantity' => 1,
+                'user_id' => $request->user()->id
+            ]);
+        }
+        else{
+            $inCart->quantity = $inCart->quantity + 1;
+            $inCart->save(); 
+        }
 
         return response()->json([
             'message' => "Item added to cart",
             'cart_id' => $cart->id
+        ], 200);
+
+    }
+
+    public function removeCartItem(Request $request,$menuId){
+        $cartItem = Cart::where('menu_id',$menuId)->first();
+
+        if(!$cartItem) {
+            return response()->json([
+                'error' => 'Cart Item not found'
+            ], 404);
+        }
+        if($cartItem->quantity == 1  )   {
+        $cartItem->delete();
+        }
+        else{
+            $cartItem->quantity = $cartItem->quantity - 1;
+        }
+
+        return response()->json([
+            'message' => "Cart Item removed",
         ], 200);
 
     }

@@ -15,7 +15,7 @@ class AuthController extends Controller
 {
     public function register(Request $request){
 
-        if($request->account_type == 'customer'){
+        if($request->account_type == 'customer' || $request->account_type == 'driver'){
 
         
         $request->validate([
@@ -24,7 +24,7 @@ class AuthController extends Controller
             'password' => 'required|string|min:8',
             'phone_number'=>'required|numeric|unique:users',
             'phone_number_type'=>'required|in:whatsapp,sms,both',
-            'account_type' => 'required|in:customer,restaurant,driver'
+            'account_type' => 'required|in:customer,driver'
             ]);
 
         // Generate OTP

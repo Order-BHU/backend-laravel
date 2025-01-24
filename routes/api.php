@@ -31,7 +31,7 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
                 Route::post('{restaurantId}/add-menu', 'RestaurantController@addMenu');
                 Route::post('{menuId}/add-to-cart', 'CartController@addToCart');
                 Route::post('{menuId}/remove-cart-item', 'CartController@removeCartItem');
-                Route::post('/view-cart', 'CartController@');
+                Route::get('/view-cart', 'CartController@');
                 Route::post('{menuId}/edit-menu', 'RestaurantController@editMenu');
                 Route::get('{orderType}/checkout', 'OrderController@checkout');
                 Route::get('{orderType}/my-orders', 'OrderController@myOrders');

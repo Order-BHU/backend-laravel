@@ -31,7 +31,7 @@ class CartController extends Controller
 
         return response()->json([
             'message' => "Item added to cart",
-            'cart_id' => $cart->id
+            
         ], 200);
 
     }

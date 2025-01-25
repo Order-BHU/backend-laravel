@@ -76,7 +76,7 @@ class CartController extends Controller
 
         return response()->json([
             'message' => 'Cart Items Below',
-            'cart-items'=> $cartList
+            'cart_items'=> $cartList
         ],200);
     }
     

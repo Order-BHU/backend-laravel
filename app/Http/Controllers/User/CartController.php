@@ -71,7 +71,7 @@ class CartController extends Controller
                 'item_description' => $menu->description,
                 'quantity' => $c->quantity,
             ];
-            array_push($item,$cartList);
+            array_push($cartList,$item);
         }
 
         return response()->json([

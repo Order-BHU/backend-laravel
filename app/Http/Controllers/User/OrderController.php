@@ -104,14 +104,14 @@ class OrderController extends Controller
                 foreach ($orders as $order) {
                     $restaurant = Restaurant::findByID($order->restaurant_id);
 
-                    $ordersArray[] = [
+                    $orderArray[] = [
                         'order_id' => $order->id,
                         'restaurant_name' => $restaurant->name,
                         'items' => $order->items,
                         'total' => $order->total,
                         'order_date' => $order->order_date
                     ];
-                    array_push($ordersArray, $restaurant);
+                    array_push($ordersArray, $orderArray);
 
                 }
                 return response()->json([

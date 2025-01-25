@@ -32,7 +32,7 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
                 Route::post('{menuId}/add-to-cart', 'CartController@addToCart');
                 Route::post('{menuId}/remove-cart-item', 'CartController@removeCartItem');
 
-                Route::post('/view-cart', 'CartController@viewCart');
+                Route::get('/view-cart', 'CartController@viewCart');
 
 
                 Route::post('{menuId}/edit-menu', 'RestaurantController@editMenu');

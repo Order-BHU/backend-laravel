@@ -46,9 +46,11 @@ class CartController extends Controller
         }
         if($cartItem->quantity == 1  )   {
         $cartItem->delete();
+    
         }
         else{
             $cartItem->quantity = $cartItem->quantity - 1;
+            $cartItem->save();
         }
 
         return response()->json([

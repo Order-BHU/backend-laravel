@@ -36,7 +36,7 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
 
 
                 Route::post('{menuId}/edit-menu', 'RestaurantController@editMenu');
-                Route::get('{orderType}/checkout', 'OrderController@checkout');
+                Route::post('{orderType}/checkout', 'OrderController@checkout');
                 Route::get('{orderType}/my-orders', 'OrderController@myOrders');
                 Route::post('{orderId}/{status}/update-order-status', 'OrderController@updateOrderStatus');
                 Route::post('/logout', 'AuthController@logout');

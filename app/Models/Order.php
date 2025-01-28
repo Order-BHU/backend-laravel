@@ -9,6 +9,17 @@ class Order extends Model
     protected $table = 'orders';
 
     const ALLOWED_OPTIONS = ['pending','ready','completed','accepted'];
+
+    protected $fillable = [
+        
+       'user_id',
+            'items',
+            'restaurant_id',
+            'total',
+            'status',
+        
+    
+    ];
     protected $hidden =
     [
         'created_at',

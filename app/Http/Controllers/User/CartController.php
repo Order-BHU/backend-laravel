@@ -68,6 +68,7 @@ class CartController extends Controller
             $menu = Menu::where('id', $c->menu_id)->first();
 
             $item = [
+                'menu_id'=> $menu->id,
                 'item_picture' => $menu->image,
                 'item_name' => $menu->name,
                 'item_description' => $menu->description,

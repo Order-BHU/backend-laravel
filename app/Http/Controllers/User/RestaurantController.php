@@ -32,9 +32,22 @@ class RestaurantController extends Controller
 
     public function menuList($restaurantId){
 
-      
 
-        $categories = Category::select('name','id')->with('menus' )->get();
+
+        $categories = Category::select('name', 'id')
+            ->with([
+                'menus' => function ($query) {
+                    $query->select('id', 'name', 'description', 'restaurant_id', 'category_id', 'is_available', 'image', 'price');
+                }
+            ])
+            ->get()
+            ->map(function ($category) {
+                $category->menus = $category->menus->map(function ($menu) {
+                    $menu->image = asset('storage/' . $menu->image); // Change image path
+                    return $menu;
+                });
+                return $category;
+            });
 
 
 

@@ -68,10 +68,12 @@ class CartController extends Controller
         foreach ($cart as $c){
             $menu = Menu::where('id', $c->menu_id)->first();
 
+            $imageUrl = asset('storage/' . $menu->image);
+
             $item = [
                 'menu_id'=> $menu->id,
                 'item_price'=> $menu->price,
-                'item_picture' => $menu->image,
+                'item_picture' => $imageUrl,
                 'item_name' => $menu->name,
                 'item_description' => $menu->description,
                 'quantity' => $c->quantity,

@@ -41,6 +41,10 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
                 Route::post('{orderId}/{status}/update-order-status', 'OrderController@updateOrderStatus');
                 Route::post('/logout', 'AuthController@logout');
 
+
+                Route::post('/update-profile-picture', 'ProfileController@updateProfilePicture');
+
+
             });
            
 

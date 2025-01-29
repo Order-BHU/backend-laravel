@@ -39,8 +39,7 @@ class OrderController extends Controller
 
         if($order){
             // Removes the cart items for the restaurant
-            Cart::where('user_id', $request->user()->id())->delete();
-
+            Cart::where('user_id', $request->user()->id)->delete();
         }
 
         return response([

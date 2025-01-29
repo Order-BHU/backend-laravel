@@ -43,7 +43,7 @@ class RestaurantController extends Controller
             ->get()
             ->map(function ($category) {
                 $category->menus = $category->menus->map(function ($menu) {
-                    $menu->image = asset('storage/' . $menu->image); // Change image path
+                    $menu->image = asset('public/storage/' . $menu->image); // Image Path works only online
                     return $menu;
                 });
                 return $category;

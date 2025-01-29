@@ -15,4 +15,13 @@ class Restaurant extends Model
         'cover_picture'
     ];
 
+   
+
+
+
+    // public function order()
+    // {
+    //     return $this->hasMany(Order::class);
+    // }
+
 }

@@ -14,11 +14,12 @@ use App\Models\Menu;
 class OrderController extends Controller
 {
 
-    public function checkout(Request $request){
+    public function checkout(Request $request, $restaurantId){
 
         // Validates the checkout request
         $request->validate([
             'items'=>'required|array',
+            'total'=>'required|numeric',
         ]);
 
         // Item Array Expected Below
@@ -27,11 +28,12 @@ class OrderController extends Controller
         //     'quantity'=>2
         // ];
 
+        $restaurant = Restaurant::where('user_id',$request->user()->id)->first();
         // Creates a new order with the provided items, restaurant_id and user_id
         $order = Order::create([
             'user_id' => $request->user()->id,
             'items'=>$request->items,
-            'restaurant_id' => $request->restaurant_id,
+            'restaurant_id' => $restaurantId,
             'total'=>$request->total,
             'status' => 'pending',
         ]);
@@ -58,8 +60,10 @@ class OrderController extends Controller
             }
 
             if ($orderType == 'pending') {
+                
                 $orders = Order::where('restaurant_id', $restaurant->id)
                     ->where('status', 'pending')->get();
+
 
                 return response()->json([
                     'orders' => $orders,

@@ -11,8 +11,7 @@ class Order extends Model
     const ALLOWED_OPTIONS = ['pending','ready','completed','accepted'];
 
     protected $fillable = [
-        
-       'user_id',
+           'user_id',
             'items',
             'restaurant_id',
             'total',
@@ -20,9 +19,20 @@ class Order extends Model
         
     
     ];
+
+    protected $casts = [
+        'items' => 'array',
+    ];
+
     protected $hidden =
     [
         'created_at',
         'updated_at',
     ];
+
+
+    // public function restaurant()
+    // {
+    //     return $this->belongsTo(Restaurant::class, 'restaurant_id');
+    // }
 }

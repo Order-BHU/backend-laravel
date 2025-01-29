@@ -38,6 +38,12 @@ class OrderController extends Controller
             'status' => 'pending',
         ]);
 
+        if($order){
+            // Removes the cart items for the restaurant
+            Cart::where('user_id', $request->user()->id())->delete();
+            
+        }
+
         return response([
             'message'=>'Checkout Successfully'
         ]);

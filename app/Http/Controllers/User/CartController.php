@@ -15,7 +15,8 @@ class CartController extends Controller
     public function addToCart(Request $request, $menuId)
     {
 
-        $inCart = Cart::where('menu_id',$menuId)->first();
+        $inCart = Cart::where('menu_id',$menuId)
+                  ->where('user_id', $request->user()->id)->first();
 
         if(!$inCart){
             $cart = Cart::create([

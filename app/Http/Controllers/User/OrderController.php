@@ -28,7 +28,6 @@ class OrderController extends Controller
         //     'quantity'=>2
         // ];
 
-        $restaurant = Restaurant::where('user_id',$request->user()->id)->first();
         // Creates a new order with the provided items, restaurant_id and user_id
         $order = Order::create([
             'user_id' => $request->user()->id,
@@ -41,7 +40,7 @@ class OrderController extends Controller
         if($order){
             // Removes the cart items for the restaurant
             Cart::where('user_id', $request->user()->id())->delete();
-            
+
         }
 
         return response([

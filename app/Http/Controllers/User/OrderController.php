@@ -163,12 +163,12 @@ class OrderController extends Controller
     public function updateOrderStatus(Request $request, $orderId, $status)
     {
 
-        $request->validate([
-            'status' => [
-                'required',
-                Rule::in(Order::ALLOWED_OPTIONS),
-            ],
-        ]);
+        //$request->validate([
+         //   'status' => [
+         //       'required',
+                //Rule::in(Order::ALLOWED_OPTIONS),
+   //         ],
+     //   ]);
 
 
         if ($request->user()->account_type == 'restaurant') {

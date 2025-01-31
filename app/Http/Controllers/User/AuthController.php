@@ -236,7 +236,7 @@ class AuthController extends Controller
             'profile_image'=> asset('public/storage', $user->profile_picture_url),
             'account_type'=>$user->account_type,
             'token'=>$token
-        ],200)->cookie('token', $token, 60, '/', null, true, true);;
+        ],200)->cookie('token', $token, 60, '/', null, true, true);
     }
     else if($user->account_type ==  'restaurant'){
         $restaurant = Restaurant::where('user_id', $user->id)->first();
@@ -256,6 +256,15 @@ class AuthController extends Controller
     }
     else if($user->account_type == 'driver'){
 
+
+            return response()->json([
+                'message' => "Logged in Successfully",
+                'id' => $user->id,
+                'name' => $user->name,
+                'profile_image' => asset('public/storage', $user->profile_picture_url),
+                'account_type' => $user->account_type,
+                'token' => $token
+            ], 200)->cookie('token', $token, 60, '/', null, true, true);
     } 
     else if ($request->account_type == "admin") {
         $restaurants = Restaurant::all();

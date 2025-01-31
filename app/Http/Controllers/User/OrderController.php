@@ -20,6 +20,7 @@ class OrderController extends Controller
         $request->validate([
             'items'=>'required|array',
             'total'=>'required|numeric',
+            'location'=>'required'
         ]);
 
         // Item Array Expected Below
@@ -34,6 +35,7 @@ class OrderController extends Controller
             'items'=>$request->items,
             'restaurant_id' => $restaurantId,
             'total'=>$request->total,
+            'location'=>$request->location,
             'status' => 'pending',
         ]);
 

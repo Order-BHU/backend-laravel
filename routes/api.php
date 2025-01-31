@@ -43,7 +43,7 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
                 // Order routes
                 Route::post('{restaurantId}/checkout', 'OrderController@checkout');
                 Route::post('{status}/driver-status-update', 'OrderController@driverStatusUpdate');
-                Route::post('{orderId}/update-order-status', 'OrderController@updateOrderStatus');
+                Route::post('{orderId}/{status}/update-order-status', 'OrderController@updateOrderStatus');
 
                 // Authentication routes
                 Route::post('/logout', 'AuthController@logout');

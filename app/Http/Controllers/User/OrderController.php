@@ -190,7 +190,7 @@ class OrderController extends Controller
                 $drivers = User::select('id')->where('account_type', 'driver')->get();
 
                 // Get all drivers with no orders
-                $driversWithNoOrders = array_diff($drivers->toArray(), Order::pluck('driver_id')->toArray());
+                $driversWithNoOrders = array_diff($drivers->pluck('id')->toArray(), Order::pluck('driver_id')->toArray());
 
                 // If all drivers have orders, find driver with least number of orders
                 if(empty($driversWithNoOrders)){

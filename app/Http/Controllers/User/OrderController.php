@@ -48,6 +48,21 @@ class OrderController extends Controller
 
     }
 
+    public function driverStatusUpdate($status){
+
+        $driver = User::where('id', auth()->user()->id)->first();
+        $driver->status = $status;
+        $driver->save();
+
+        return response()->json([
+            'message' => 'Driver Status Updated',
+            'status' => $driver->status
+        ], 200);
+
+        
+
+    }
+
     public function myOrders(Request $request, $orderType)
     {
 
@@ -134,7 +149,7 @@ class OrderController extends Controller
             }
 
         } else if ($request->user()->account_type == 'driver') {
-            $orders = Order::where('status', 'ready')->get();
+            $orders = Order::where('driver_id', $request->user()->id)->get();
 
             return response()->json([
                 'orders' => $orders,
@@ -168,6 +183,39 @@ class OrderController extends Controller
                 $order = Order::where('id', $orderId)->where('status', 'accepted')->first();
                 $order->status = $status;
                 $order->save();
+
+                // Gets all drivers
+                $drivers = User::select('id')->where('account_type', 'driver')->get();
+
+                // Get all drivers with no orders
+                $driversWithNoOrders = array_diff($drivers->toArray(), Order::pluck('driver_id')->toArray());
+
+                // If all drivers have orders, find driver with least number of orders
+                if(empty($driversWithNoOrders)){
+                    // Finds driver with least Orders
+                    $availableDriver = Order::whereIn('driver_id', $drivers)
+                        ->where('status', 'ready')
+                        ->groupBy('driver_id')
+                        ->orderByRaw('COUNT(*) ASC')
+                        ->limit(1)
+                        ->value('driver_id');
+                    $order->driver_id = $availableDriver;
+                    $order->save();
+
+                }
+                else {
+                    $availableDriver = $driversWithNoOrders[0]['id'];
+                    $order->driver_id = $availableDriver;
+                    $order->save();
+                }
+          
+
+                if (is_null($availableDriver)) {
+                    // Handle case where all driver_id values are NULL
+
+                }
+
+             
 
                 return response()->json([
                     'message' => 'Status updated successfully'

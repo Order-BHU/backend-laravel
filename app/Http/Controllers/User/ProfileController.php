@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Location;
 use Illuminate\Http\Request;
 
 class ProfileController extends Controller
@@ -10,6 +11,15 @@ class ProfileController extends Controller
     public function myDashboard(Request $request){
         return response()->json([
             'message'=> $request->user()
+        ]);
+    }
+
+    public function getLocations(){
+
+        $locations = Location::all();
+
+        return response()->json([
+            'locations'=> $locations
         ]);
     }
 

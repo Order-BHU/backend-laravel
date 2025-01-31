@@ -80,8 +80,10 @@ class CartController extends Controller
             ];
             array_push($cartList,$item);
         }
-        $total_price = array_sum(array_map('intval', array_column($cartList, 'item_price')));
-
+        $total_price = array_sum(array_map(function ($item) {
+            return intval($item['item_price']) * intval($item['quantity']);
+        }, $cartList));
+        
         return response()->json([
             'message' => 'Cart Items Below',
             'cart_items'=> $cartList,

@@ -123,6 +123,7 @@ class AuthController extends Controller
     // {
  
     // }
+  
     else {
         return response()->json([
             'message'=>'Account type not available'
@@ -232,7 +233,7 @@ class AuthController extends Controller
             'message'=>"Logged in Successfully",
             'id'=>$user->id,
             'name'=> $user->name,
-            'profile_image'=>$user->profile_picture_url,
+            'profile_image'=> asset('public/storage', $user->profile_picture_url),
             'account_type'=>$user->account_type,
             'token'=>$token
         ],200)->cookie('token', $token, 60, '/', null, true, true);;
@@ -244,7 +245,7 @@ class AuthController extends Controller
                 'message' => "Logged in Successfully",
                 'id' => $user->id,
                 'restaurant_id'=>$restaurant->id,
-                'profile_image' => $user->profile_picture_url,
+                'profile_image' => asset('public/storage/', $user->profile_picture_url),
                 'owners_name'=>$user->name,
                 'restaurant_name' => $restaurant->name,
                 'account_type' => $user->account_type,
@@ -255,7 +256,27 @@ class AuthController extends Controller
     }
     else if($user->account_type == 'driver'){
 
-    }
+    } 
+    else if ($request->account_type == "admin") {
+        $restaurants = Restaurant::all();
+        $customers = User::where('account_type', 'customer')->get();
+
+        return response()->json([
+            'message' => 'Logged in Successfully',
+            'admin_id'=>$user->id,
+            'profile_image' => asset('public/storage/', $user->profile_picture_url),
+            'name' => $user->name,
+            'account_type' => $user->account_type,
+            'restaurants' => $restaurants,
+            'customers' => $customers,
+            'token' => $token
+        ], 200)->cookie('token', $token, 60, '/', null, true, true);
+
+
+
+
+
+     }
     else{
             return response()->json([
                 'message' => 'Account type not available'

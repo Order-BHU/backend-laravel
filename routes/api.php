@@ -20,6 +20,7 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
             Route::post('/login', 'AuthController@login');
             Route::post('/verify-user', 'AuthController@verifyUser');
             Route::post('/get-otp', 'AuthController@getOtp');
+            Route::get('locations','ProfileController@getLocations');
 
             Route::get('/categories', 'RestaurantController@categories');
             Route::get('/restaurant-list', 'RestaurantController@restaurantList');
@@ -28,20 +29,24 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
 
 
             Route::middleware('auth:sanctum')->group(function () {
+
+                // Restaurant routes
                 Route::post('{restaurantId}/add-menu', 'RestaurantController@addMenu');
+                Route::post('{menuId}/edit-menu', 'RestaurantController@editMenu');
+                Route::get('{restaurantId}/my-orders', 'OrderController@myOrders');
+
+                // Cart routes
                 Route::post('{menuId}/add-to-cart', 'CartController@addToCart');
                 Route::post('{menuId}/remove-cart-item', 'CartController@removeCartItem');
-
                 Route::get('/view-cart', 'CartController@viewCart');
 
-
-                Route::post('{menuId}/edit-menu', 'RestaurantController@editMenu');
+                // Order routes
                 Route::post('{restaurantId}/checkout', 'OrderController@checkout');
-                Route::get('{orderType}/my-orders', 'OrderController@myOrders');
-                Route::post('{orderId}/{status}/update-order-status', 'OrderController@updateOrderStatus');
+                Route::post('{status}/driver-status-update', 'OrderController@driverStatusUpdate');
+                Route::post('{orderId}/update-order-status', 'OrderController@updateOrderStatus');
+
+                // Authentication routes
                 Route::post('/logout', 'AuthController@logout');
-
-
                 Route::post('/update-profile-picture', 'ProfileController@updateProfilePicture');
 
 

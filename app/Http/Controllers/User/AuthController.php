@@ -119,10 +119,10 @@ class AuthController extends Controller
                 'message' => 'OTP sent successfully, Check email'
             ], 200);
     }
-    else if($request->account_type == "driver")
-    {
-
-    }
+    // else if($request->account_type == "driver")
+    // {
+ 
+    // }
     else {
         return response()->json([
             'message'=>'Account type not available'
@@ -232,6 +232,7 @@ class AuthController extends Controller
             'message'=>"Logged in Successfully",
             'id'=>$user->id,
             'name'=> $user->name,
+            'profile_image'=>$user->profile_picture_url,
             'account_type'=>$user->account_type,
             'token'=>$token
         ],200)->cookie('token', $token, 60, '/', null, true, true);;
@@ -243,6 +244,7 @@ class AuthController extends Controller
                 'message' => "Logged in Successfully",
                 'id' => $user->id,
                 'restaurant_id'=>$restaurant->id,
+                'profile_image' => $user->profile_picture_url,
                 'owners_name'=>$user->name,
                 'restaurant_name' => $restaurant->name,
                 'account_type' => $user->account_type,

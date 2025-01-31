@@ -98,11 +98,13 @@ class OrderController extends Controller
         } else if ($request->user()->account_type == 'customer') {
             $user = User::where('id', $request->user()->id)->first();
             if ($orderType == 'pending') {
-                $orders = Order::where('user_id', $user->id)
+                $order = Order::where('user_id', $user->id)
                     ->where('status', 'pending')->first();
+                $restaurant = Restaurant::where('id',$order->restaurant_id)->first();
 
                 return response()->json([
-                    'orders' => $orders,
+                    'order' => $order,
+                    'restaurant_name' => $restaurant->staurant_name
                 ], 200);
 
             } else if ($orderType == 'history') {

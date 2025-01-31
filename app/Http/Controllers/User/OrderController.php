@@ -104,7 +104,7 @@ class OrderController extends Controller
 
                 return response()->json([
                     'order' => $order,
-                    'restaurant_name' => $restaurant->staurant_name
+                    'restaurant_name' => $restaurant->name
                 ], 200);
 
             } else if ($orderType == 'history') {

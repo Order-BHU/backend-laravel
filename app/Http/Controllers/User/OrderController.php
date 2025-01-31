@@ -151,10 +151,24 @@ class OrderController extends Controller
             }
 
         } else if ($request->user()->account_type == 'driver') {
-            $orders = Order::where('driver_id', $request->user()->id)->get();
 
+            $orders = Order::where('driver_id', $request->user()->id)->get();
+            $ordersArray = [];
+            foreach ($orders as $order) {
+                $restaurant = Restaurant::findByID($order->restaurant_id);
+
+                $orderArray[] = [
+                    'order_id' => $order->id,
+                    'restaurant_name' => $restaurant->name,
+                    'items' => $order->items,
+                    'total' => $order->total,
+                    'order_date' => $order->order_date
+                ];
+                array_push($ordersArray, $orderArray);
+
+            }
             return response()->json([
-                'orders' => $orders,
+                'orders' => $ordersArray,
             ], 200);
         }
 
@@ -206,7 +220,7 @@ class OrderController extends Controller
 
                 }
                 else {
-                    $availableDriver = $driversWithNoOrders[0]['id'];
+                    $availableDriver = $driversWithNoOrders[0];
                     $order->driver_id = $availableDriver;
                     $order->save();
                 }

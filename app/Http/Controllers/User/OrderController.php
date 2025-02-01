@@ -129,7 +129,7 @@ class OrderController extends Controller
 
                 $ordersArray = [];
                 foreach ($orders as $order) {
-                    $restaurant = Restaurant::findByID($order->restaurant_id);
+                    $restaurant = Restaurant::where('id',$order->restaurant_id)->first();
 
                     $orderArray[] = [
                         'order_id' => $order->id,
@@ -155,7 +155,7 @@ class OrderController extends Controller
             $orders = Order::where('driver_id', $request->user()->id)->get();
             $ordersArray = [];
             foreach ($orders as $order) {
-                $restaurant = Restaurant::findByID($order->restaurant_id);
+                $restaurant = Restaurant::where('id', $order->restaurant_id)->first();
 
                 $orderArray[] = [
                     'order_id' => $order->id,

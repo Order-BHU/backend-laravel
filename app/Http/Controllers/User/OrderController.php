@@ -23,7 +23,7 @@ class OrderController extends Controller
             'location'=>'required'
         ]);
 
-        // Item Array Expected Below
+        // Item Array 
         // $item[] = [
         //     'menu_id'=> 23,
         //     'quantity'=>2
@@ -152,28 +152,62 @@ class OrderController extends Controller
 
         } else if ($request->user()->account_type == 'driver') {
 
-            $orders = Order::where('driver_id', $request->user()->id)->get();
-            $ordersArray = [];
-            foreach ($orders as $order) {
-                $restaurant = Restaurant::where('id', $order->restaurant_id)->first();
-                $user = User::where('id', $order->user_id)->first();
-                $orderArray[] = [
-                    'order_id' => $order->id,
-                    'restaurant_name' => $restaurant->name,
-                    'user_name'=> $user->name,
-                    'user_phoneNumber' => $user->phone_number,
-                    'phone_number_type' => $user->phone_number_type,
-                    'location' => $order->customer_location,
-                    'items' => $order->items,
-                    'total' => $order->total,
-                    'order_date' => $order->order_date
-                ];
-                array_push($ordersArray, $orderArray);
+            if($orderType == 'ready') {
+                $orders = Order::where('driver_id', $request->user()->id)
+                    ->where('status', 'ready')->get();
+                foreach ($orders as $order) {
+                    $restaurant = Restaurant::where('id', $order->restaurant_id)->first();
+                    $user = User::where('id', $order->user_id)->first();
+                    $orderArray[] = [
+                        'order_id' => $order->id,
+                        'restaurant_name' => $restaurant->name,
+                        'user_name' => $user->name,
+                        'user_phoneNumber' => $user->phone_number,
+                        'phone_number_type' => $user->phone_number_type,
+                        'location' => $order->customer_location,
+                        'items' => $order->items,
+                        'total' => $order->total,
+                        'order_date' => $order->order_date
+                    ];
+                    array_push($ordersArray, $orderArray);
 
+                }
+                return response()->json([
+                    'orders' => $ordersArray,
+                ], 200);
+
+            } else if ($orderType == 'completed') {
+                $orders = Order::where('driver_id', $request->user()->id)
+                    ->where('status', 'completed')->get();
+
+                $ordersArray = [];
+                foreach ($orders as $order) {
+                    $restaurant = Restaurant::where('id', $order->restaurant_id)->first();
+                    $user = User::where('id', $order->user_id)->first();
+                    $orderArray[] = [
+                        'order_id' => $order->id,
+                        'restaurant_name' => $restaurant->name,
+                        'user_name' => $user->name,
+                        'user_phoneNumber' => $user->phone_number,
+                        'phone_number_type' => $user->phone_number_type,
+                        'location' => $order->customer_location,
+                        'items' => $order->items,
+                        'total' => $order->total,
+                        'order_date' => $order->order_date
+                    ];
+                    array_push($ordersArray, $orderArray);
+
+                }
+                return response()->json([
+                    'orders' => $ordersArray,
+                ], 200);
+            } 
+            else {
+                return response()->json([
+                    'message' => "Invalid order type"
+                ], 500);
             }
-            return response()->json([
-                'orders' => $ordersArray,
-            ], 200);
+       
         }
 
     }

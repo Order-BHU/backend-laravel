@@ -156,10 +156,14 @@ class OrderController extends Controller
             $ordersArray = [];
             foreach ($orders as $order) {
                 $restaurant = Restaurant::where('id', $order->restaurant_id)->first();
-
+                $user = User::where('id', $order->user_id)->first();
                 $orderArray[] = [
                     'order_id' => $order->id,
                     'restaurant_name' => $restaurant->name,
+                    'user_name'=> $user->name,
+                    'user_phoneNumber' => $user->phone_number,
+                    'phone_number_type' => $user->phone_number_type,
+                    'location' => $order->customer_location,
                     'items' => $order->items,
                     'total' => $order->total,
                     'order_date' => $order->order_date

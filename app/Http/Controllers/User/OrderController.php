@@ -155,6 +155,8 @@ class OrderController extends Controller
             if($orderType == 'ready') {
                 $orders = Order::where('driver_id', $request->user()->id)
                     ->where('status', 'ready')->get();
+
+                $ordersArray = [];
                 foreach ($orders as $order) {
                     $restaurant = Restaurant::where('id', $order->restaurant_id)->first();
                     $user = User::where('id', $order->user_id)->first();
@@ -176,7 +178,7 @@ class OrderController extends Controller
                     'orders' => $ordersArray,
                 ], 200);
 
-            } else if ($orderType == 'completed') {
+            } else if ($orderType == 'completed' || $orderType == 'history') {
                 $orders = Order::where('driver_id', $request->user()->id)
                     ->where('status', 'completed')->get();
 

@@ -46,7 +46,8 @@ class OrderController extends Controller
         }
 
         return response([
-            'message' => 'Checkout Successfully'
+            'message' => 'Checkout Successfully',
+            'code' =>$randomCode
         ]);
     }
 

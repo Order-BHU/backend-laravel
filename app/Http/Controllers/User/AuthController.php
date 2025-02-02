@@ -263,6 +263,7 @@ class AuthController extends Controller
                 'name' => $user->name,
                 'profile_image' => asset('public/storage', $user->profile_picture_url),
                 'account_type' => $user->account_type,
+                'status'=> $user->status,
                 'token' => $token
             ], 200)->cookie('token', $token, 60, '/', null, true, true);
     } 

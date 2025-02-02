@@ -22,7 +22,7 @@ class OrderController extends Controller
         ]);
 
         // Generate a random 6-character alphanumeric code
-        $randomCode = Str::random(6);
+        $randomCode = Str::random(5);
 
         // Creates a new order with the provided items, restaurant_id and user_id
         $order = Order::create([

@@ -74,7 +74,7 @@ class AuthController extends Controller
                 'password' => 'required|string|min:8',
                 'phone_number' => 'required|numeric|unique:users',
                 'phone_number_type' => 'required|in:whatsapp,sms,both',
-                'account_type'=>'required|in:customer,restaurant,driver'
+                'account_type'=>'required'
 
             ]);
 
@@ -128,7 +128,7 @@ class AuthController extends Controller
                 'password' => 'required|string|min:8',
                 'phone_number' => 'required|numeric|unique:users',
                 'phone_number_type' => 'required|in:whatsapp,sms,both',
-                'account_type' => 'required|in:customer,driver'
+                'account_type' => 'required'
             ]);
 
             // Generate OTP

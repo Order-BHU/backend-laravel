@@ -24,31 +24,42 @@ class OrderController extends Controller
         // Generate a random 6-character alphanumeric code
         $randomCode = Str::random(5);
 
-        // Creates a new order with the provided items, restaurant_id and user_id
-        $order = Order::create([
-            'user_id' => $request->user()->id,
-            'items' => $request->items,
-            'restaurant_id' => $restaurantId,
-            'total' => $request->total,
-            'customer_location' => $request->location,
-            'status' => 'pending',
-            'order_code' => $randomCode,
-        ]);
+        // Checks for Pending Order
+        $pendingOrder = Order::where('user_id', $request->user()->id)
+                       ->where('status', '!=', 'completed')->first();
 
-        if ($order) {
-            // Removes the cart items for the restaurant
-            Cart::where('user_id', $request->user()->id)->delete();
+        if(!$pendingOrder){
+            // Creates a new order with the provided items, restaurant_id and user_id
+            $order = Order::create([
+                'user_id' => $request->user()->id,
+                'items' => $request->items,
+                'restaurant_id' => $restaurantId,
+                'total' => $request->total,
+                'customer_location' => $request->location,
+                'status' => 'pending',
+                'order_code' => $randomCode,
+            ]);
 
-            // Update the user's otp column with the random code
-            $user = $request->user();
-            $user->otp = $randomCode;
-            $user->save();
+            if ($order) {
+                // Removes the cart items for the restaurant
+                Cart::where('user_id', $request->user()->id)->delete();
+
+                // Update the user's otp column with the random code
+                $user = $request->user();
+                $user->otp = $randomCode;
+                $user->save();
+            }
         }
-
+        else {
+            return response([
+                'message'=>'You have a pending order, complete your order to order again'
+            ],200);
+        }
+   
         return response([
             'message' => 'Checkout Successfully',
             'code' =>$randomCode
-        ]);
+        ],200);
     }
 
     public function driverStatusUpdate($status)

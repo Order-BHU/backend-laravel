@@ -302,8 +302,6 @@ class AuthController extends Controller
         
     }
     else if($user->account_type == 'driver'){
-
-
             return response()->json([
                 'message' => "Logged in Successfully",
                 'id' => $user->id,
@@ -314,7 +312,7 @@ class AuthController extends Controller
                 'token' => $token
             ], 200)->cookie('token', $token, 60, '/', null, true, true);
     } 
-    else if ($request->account_type == "admin") {
+    else if ($request->account_type == 'admin') {
         $restaurants = Restaurant::all();
         $customers = User::where('account_type', 'customer')->get();
 
@@ -328,10 +326,6 @@ class AuthController extends Controller
             'customers' => $customers,
             'token' => $token
         ], 200)->cookie('token', $token, 60, '/', null, true, true);
-
-
-
-
 
      }
     else{

@@ -64,6 +64,16 @@ class OrderController extends Controller
 
     public function driverStatusUpdate($status)
     {
+
+        // Validate the status
+        if (!in_array($status, ['online', 'offline'])) {
+            return response()->json([
+                'message' => 'Invalid status'
+            ], 400);
+        }
+
+
+
         $driver = User::where('id', auth()->user()->id)->first();
         $driver->status = $status;
         $driver->save();
@@ -118,6 +128,13 @@ class OrderController extends Controller
             if ($orderType == 'pending') {
                 $order = Order::where('user_id', $user->id)
                     ->where('status', 'pending')->first();
+
+                if (!$order) {
+                    return response()->json([
+                        'message' => 'No pending orders found'
+                    ], 404);
+                }
+
                 $restaurant = Restaurant::where('id', $order->restaurant_id)->first();
 
                 return response()->json([
@@ -148,7 +165,8 @@ class OrderController extends Controller
                     'message' => "Invalid order type"
                 ], 500);
             }
-        } elseif ($request->user()->account_type == 'driver') {
+        }
+         elseif ($request->user()->account_type == 'driver') {
             if ($orderType == 'ready') {
                 $orders = Order::where('driver_id', $request->user()->id)
                     ->where('status', 'ready')->get();
@@ -173,7 +191,9 @@ class OrderController extends Controller
                 return response()->json([
                     'orders' => $ordersArray,
                 ], 200);
-            } elseif ($orderType == 'completed' || $orderType == 'history') {
+
+            } 
+            elseif ($orderType == 'completed' || $orderType == 'history') {
                 $orders = Order::where('driver_id', $request->user()->id)
                     ->where('status', 'completed')->get();
 
@@ -238,15 +258,15 @@ class OrderController extends Controller
                         ->value('driver_id');
                     $order->driver_id = $availableDriver;
                     $order->save();
+
+
                 } else {
                     $availableDriver = $driversWithNoOrders[0];
                     $order->driver_id = $availableDriver;
                     $order->save();
                 }
 
-                if (is_null($availableDriver)) {
-                    // Handle case where all driver_id values are NULL
-                }
+            
 
                 return response()->json([
                     'message' => 'Status updated successfully'

@@ -274,8 +274,8 @@ class AuthController extends Controller
         $user = $request->user();
 
         // Delete existing tokens
-        $request->user()->currentAccessToken()->delete();
-
+         $user->tokens()->delete();
+    
         $token = $user->createToken('auth_token')->plainTextToken;
 
     if($user->account_type == 'customer') {

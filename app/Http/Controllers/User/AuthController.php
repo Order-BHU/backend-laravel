@@ -284,7 +284,22 @@ class AuthController extends Controller
             'account_type'=>$user->account_type,
             'token'=>$token
         ],200)->cookie('token', $token, 60, '/', null, true, true);
-    }
+    } else if ($request->account_type == 'admin') {
+            $restaurants = Restaurant::all();
+            $customers = User::where('account_type', 'customer')->get();
+
+            return response()->json([
+                'message' => 'Logged in Successfully',
+                'admin_id' => $user->id,
+                'profile_image' => asset('public/storage/', $user->profile_picture_url),
+                'name' => $user->name,
+                'account_type' => $user->account_type,
+                'restaurants' => $restaurants,
+                'customers' => $customers,
+                'token' => $token
+            ], 200)->cookie('token', $token, 60, '/', null, true, true);
+
+        }
     else if($user->account_type ==  'restaurant'){
         $restaurant = Restaurant::where('user_id', $user->id)->first();
 
@@ -312,23 +327,11 @@ class AuthController extends Controller
                 'token' => $token
             ], 200)->cookie('token', $token, 60, '/', null, true, true);
     } 
-    else if ($request->account_type == 'admin') {
-        $restaurants = Restaurant::all();
-        $customers = User::where('account_type', 'customer')->get();
-
-        return response()->json([
-            'message' => 'Logged in Successfully',
-            'admin_id'=>$user->id,
-            'profile_image' => asset('public/storage/', $user->profile_picture_url),
-            'name' => $user->name,
-            'account_type' => $user->account_type,
-            'restaurants' => $restaurants,
-            'customers' => $customers,
-            'token' => $token
-        ], 200)->cookie('token', $token, 60, '/', null, true, true);
-
-     }
- 
+    else{
+            return response()->json([
+                'message' => 'Account type not available'
+            ]);
+    }
 
     }
 

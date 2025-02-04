@@ -328,11 +328,7 @@ class AuthController extends Controller
         ], 200)->cookie('token', $token, 60, '/', null, true, true);
 
      }
-    else{
-            return response()->json([
-                'message' => 'Account type not available'
-            ]);
-    }
+ 
 
     }
 

@@ -58,6 +58,7 @@ class OrderController extends Controller
    
         return response([
             'message' => 'Checkout Successfully',
+            'order_id' => $order->id,
             'code' =>$randomCode
         ],200);
     }
@@ -360,5 +361,29 @@ class OrderController extends Controller
                 }
             }
         }
+    }
+
+
+    public function trackOrder($orderId){
+        $order = Order::where('id', $orderId)->first();
+
+        if (!$order) {
+            return response()->json([
+               'message' => 'Order not found'
+            ], 404);
+        }
+
+        $restaurant = Restaurant::where('id', $order->restaurant_id)->first();
+        $driver = User::where('id', $order->driver_id)->first();
+
+        return response()->json([
+            'order_id' => $order->id,
+            'restaurant_name' => $restaurant->name,
+            'status' => $order->status,
+            'driver_name'=>$driver->name,
+            'driver_number'=>$driver->phone_number,
+            'driver_profile_photo'=> asset('public/storage/', $driver->profile_picture_url),
+            'items' => $order->items
+        ],200);
     }
 }

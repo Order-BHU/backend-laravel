@@ -244,6 +244,7 @@ class OrderController extends Controller
                 // Gets all drivers
                 $drivers = User::select('id')->where('account_type', 'driver')->where('status', 'online')->get();
 
+                return Order::pluck('driver_id')->toArray();
                 // Get all drivers with no orders
                 $driversWithNoOrders = array_diff($drivers->pluck('id')->toArray(), Order::pluck('driver_id')->toArray());
 

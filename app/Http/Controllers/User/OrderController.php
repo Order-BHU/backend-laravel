@@ -296,9 +296,9 @@ class OrderController extends Controller
                 // Get all drivers with no orders
                 $driversWithNoOrders = array_diff($drivers->pluck('id')->toArray(), Order::pluck('driver_id')->toArray());
 
-                return $driversWithNoOrders;
                 // If all drivers have orders, find driver with least number of orders
                 if (empty($driversWithNoOrders)) {
+                return $driversWithNoOrders;
                     // Finds driver with least Orders
                     $availableDriver = Order::whereIn('driver_id', $drivers->pluck('id')->toArray())
                         ->where('status', 'ready')

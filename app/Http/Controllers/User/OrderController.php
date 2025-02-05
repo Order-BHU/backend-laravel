@@ -305,7 +305,6 @@ class OrderController extends Controller
                         ->orderByRaw('COUNT(*) ASC')
                         ->limit(1)
                         ->value('driver_id');
-                return $availableDriver;
 
                 } else {
                     $availableDriver = $driversWithNoOrders[0];

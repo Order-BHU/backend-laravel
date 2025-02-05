@@ -298,7 +298,6 @@ class OrderController extends Controller
 
                 // If all drivers have orders, find driver with least number of orders
                 if (empty($driversWithNoOrders)) {
-                return $driversWithNoOrders;
                     // Finds driver with least Orders
                     $availableDriver = Order::whereIn('driver_id', $drivers->pluck('id')->toArray())
                         ->where('status', 'ready')
@@ -306,6 +305,8 @@ class OrderController extends Controller
                         ->orderByRaw('COUNT(*) ASC')
                         ->limit(1)
                         ->value('driver_id');
+                return $availableDriver;
+
                 } else {
                     $availableDriver = $driversWithNoOrders[0];
                 }

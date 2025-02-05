@@ -64,7 +64,6 @@ class OrderController extends Controller
 
     public function driverStatusUpdate($status)
     {
-
         // Validate the status
         if (!in_array($status, ['online', 'offline'])) {
             return response()->json([
@@ -72,9 +71,14 @@ class OrderController extends Controller
             ], 400);
         }
 
-
-
         $driver = User::where('id', auth()->user()->id)->first();
+
+        if (!$driver) {
+            return response()->json([
+                'message' => 'Driver not found'
+            ], 404);
+        }
+
         $driver->status = $status;
         $driver->save();
 
@@ -89,6 +93,12 @@ class OrderController extends Controller
         // Checks the kind of user
         if ($request->user()->account_type == 'restaurant') {
             $restaurant = Restaurant::where('user_id', $request->user()->id)->first();
+
+            if (!$restaurant) {
+                return response()->json([
+                    'message' => 'Restaurant not found'
+                ], 404);
+            }
 
             // Checks if the user owns the restaurant
             if ($request->user()->id != $restaurant->user_id) {
@@ -125,6 +135,13 @@ class OrderController extends Controller
             }
         } elseif ($request->user()->account_type == 'customer') {
             $user = User::where('id', $request->user()->id)->first();
+
+            if (!$user) {
+                return response()->json([
+                    'message' => 'User not found'
+                ], 404);
+            }
+
             if ($orderType == 'pending') {
                 $order = Order::where('user_id', $user->id)
                     ->where('status', 'pending')->first();
@@ -137,6 +154,12 @@ class OrderController extends Controller
 
                 $restaurant = Restaurant::where('id', $order->restaurant_id)->first();
 
+                if (!$restaurant) {
+                    return response()->json([
+                        'message' => 'Restaurant not found'
+                    ], 404);
+                }
+
                 return response()->json([
                     'order' => $order,
                     'restaurant_name' => $restaurant->name
@@ -147,6 +170,10 @@ class OrderController extends Controller
                 $ordersArray = [];
                 foreach ($orders as $order) {
                     $restaurant = Restaurant::where('id', $order->restaurant_id)->first();
+
+                    if (!$restaurant) {
+                        continue;
+                    }
 
                     $orderArray[] = [
                         'order_id' => $order->id,
@@ -165,8 +192,7 @@ class OrderController extends Controller
                     'message' => "Invalid order type"
                 ], 500);
             }
-        }
-         elseif ($request->user()->account_type == 'driver') {
+        } elseif ($request->user()->account_type == 'driver') {
             if ($orderType == 'ready') {
                 $orders = Order::where('driver_id', $request->user()->id)
                     ->where('status', 'ready')->get();
@@ -175,6 +201,11 @@ class OrderController extends Controller
                 foreach ($orders as $order) {
                     $restaurant = Restaurant::where('id', $order->restaurant_id)->first();
                     $user = User::where('id', $order->user_id)->first();
+
+                    if (!$restaurant || !$user) {
+                        continue;
+                    }
+
                     $orderArray[] = [
                         'order_id' => $order->id,
                         'restaurant_name' => $restaurant->name,
@@ -192,8 +223,7 @@ class OrderController extends Controller
                     'orders' => $ordersArray,
                 ], 200);
 
-            } 
-            elseif ($orderType == 'completed' || $orderType == 'history') {
+            } elseif ($orderType == 'completed' || $orderType == 'history') {
                 $orders = Order::where('driver_id', $request->user()->id)
                     ->where('status', 'completed')->get();
 
@@ -201,6 +231,11 @@ class OrderController extends Controller
                 foreach ($orders as $order) {
                     $restaurant = Restaurant::where('id', $order->restaurant_id)->first();
                     $user = User::where('id', $order->user_id)->first();
+
+                    if (!$restaurant || !$user) {
+                        continue;
+                    }
+
                     $orderArray[] = [
                         'order_id' => $order->id,
                         'restaurant_name' => $restaurant->name,
@@ -230,6 +265,13 @@ class OrderController extends Controller
         if ($request->user()->account_type == 'restaurant') {
             if ($status == 'accepted') {
                 $order = Order::where('id', $orderId)->where('status', 'pending')->first();
+
+                if (!$order) {
+                    return response()->json([
+                        'message' => 'Order not found or not in pending status'
+                    ], 404);
+                }
+
                 $order->status = $status;
                 $order->save();
 
@@ -238,44 +280,47 @@ class OrderController extends Controller
                 ], 200);
             } elseif ($status == 'ready') {
                 $order = Order::where('id', $orderId)->where('status', 'accepted')->first();
+
+                if (!$order) {
+                    return response()->json([
+                        'message' => 'Order not found or not in accepted status'
+                    ], 404);
+                }
+
                 $order->status = $status;
                 $order->save();
 
                 // Gets all drivers
                 $drivers = User::select('id')->where('account_type', 'driver')->where('status', 'online')->get();
 
-                return Order::pluck('driver_id')->toArray();
                 // Get all drivers with no orders
                 $driversWithNoOrders = array_diff($drivers->pluck('id')->toArray(), Order::pluck('driver_id')->toArray());
 
                 // If all drivers have orders, find driver with least number of orders
                 if (empty($driversWithNoOrders)) {
                     // Finds driver with least Orders
-                    $availableDriver = Order::whereIn('driver_id', $drivers)
+                    $availableDriver = Order::whereIn('driver_id', $drivers->pluck('id')->toArray())
                         ->where('status', 'ready')
                         ->groupBy('driver_id')
                         ->orderByRaw('COUNT(*) ASC')
                         ->limit(1)
                         ->value('driver_id');
-                    $order->driver_id = $availableDriver;
-                    $order->save();
-
-
                 } else {
                     $availableDriver = $driversWithNoOrders[0];
-                    $order->driver_id = $availableDriver;
-                    $order->save();
                 }
 
-            
+                // Assign the order to the available driver
+                $order->driver_id = $availableDriver;
+                $order->save();
 
                 return response()->json([
-                    'message' => 'Status updated successfully'
+                    'message' => 'Status updated successfully',
+                    'driver_id' => $availableDriver
                 ], 200);
             } else {
                 return response()->json([
                     'message' => 'Invalid Order Status'
-                ]);
+                ], 400);
             }
         } elseif ($request->user()->account_type == 'driver') {
             if ($status == 'completed') {
@@ -284,26 +329,33 @@ class OrderController extends Controller
                 ]);
 
                 $order = Order::where('id', $orderId)->where('status', 'ready')->first();
-                $customer = User::where('id', $order->user_id)->first();
 
-                if ($order) {
-                    // Check if the code in the request matches the one saved in the database
-                    if ($request->code == $customer->otp) {
-                        $order->status = $status;
-                        $order->save();
-
-                        return response()->json([
-                            'message' => 'Status updated successfully'
-                        ], 200);
-                    } else {
-                        return response()->json([
-                            'message' => 'Invalid code'
-                        ], 400);
-                    }
-                } else {
+                if (!$order) {
                     return response()->json([
                         'message' => 'Order not found or not ready'
                     ], 404);
+                }
+
+                $customer = User::where('id', $order->user_id)->first();
+
+                if (!$customer) {
+                    return response()->json([
+                        'message' => 'Customer not found'
+                    ], 404);
+                }
+
+                // Check if the code in the request matches the one saved in the database
+                if ($request->code == $customer->otp) {
+                    $order->status = $status;
+                    $order->save();
+
+                    return response()->json([
+                        'message' => 'Status updated successfully'
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'message' => 'Invalid code'
+                    ], 400);
                 }
             }
         }

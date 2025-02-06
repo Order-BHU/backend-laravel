@@ -36,8 +36,9 @@ class RestaurantController extends Controller
 
         $categories = Category::select('name', 'id')
             ->with([
-                'menus' => function ($query) {
-                    $query->select('id', 'name', 'description', 'restaurant_id', 'category_id', 'is_available', 'image', 'price');
+                'menus' => function ($query) use ($restaurantId) {
+                    $query->select('id', 'name', 'description', 'restaurant_id', 'category_id', 'is_available', 'image', 'price')
+                        ->where('restaurant_id', $restaurantId);
                 }
             ])
             ->get()

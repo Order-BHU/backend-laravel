@@ -365,25 +365,37 @@ class OrderController extends Controller
 
 
     public function trackOrder($orderId){
-        $order = Order::where('id', $orderId)->first();
+
+        $order = Order::where('id', $orderId)->where('user_id', auth()->user()->id)->first();
 
         if (!$order) {
             return response()->json([
                'message' => 'Order not found'
-            ], 404);
+            ],200);
         }
 
         $restaurant = Restaurant::where('id', $order->restaurant_id)->first();
-        $driver = User::where('id', $order->driver_id)->first();
+        if(!is_null($order->driver_id)){
+            $driver = User::where('id', $order->driver_id)->first();
 
-        return response()->json([
-            'order_id' => $order->id,
-            'restaurant_name' => $restaurant->name,
-            'status' => $order->status,
-            'driver_name'=>$driver->name,
-            'driver_number'=>$driver->phone_number,
-            'driver_profile_photo'=> asset('public/storage/', $driver->profile_picture_url),
-            'items' => $order->items
-        ],200);
+            return response()->json([
+                'order_id' => $order->id,
+                'restaurant_name' => $restaurant->name,
+                'status' => $order->status,
+                'driver_name' => $driver->name,
+                'driver_number' => $driver->phone_number,
+                'driver_profile_photo' => asset('public/storage/', $driver->profile_picture_url),
+                'items' => $order->items
+            ], 200);
+        }
+        else {
+            return response()->json([
+                'order_id' => $order->id,
+               'restaurant_name' => $restaurant->name,
+               'status' => $order->status,
+                'items' => $order->items
+            ], 200);
+        }
+      
     }
 }

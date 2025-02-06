@@ -45,6 +45,8 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
                 Route::post('{status}/driver-status-update', 'OrderController@driverStatusUpdate');
                 Route::post('{orderId}/{status}/update-order-status', 'OrderController@updateOrderStatus');
                 Route::get('{orderId}/track-order', 'OrderController@trackOrder');
+                Route::get('/test', 'OrderController@test');
+
 
 
                 // Authentication routes

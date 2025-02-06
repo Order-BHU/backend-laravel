@@ -398,4 +398,8 @@ class OrderController extends Controller
         }
       
     }
+
+    public function test(){
+        return "got here";
+    }
 }

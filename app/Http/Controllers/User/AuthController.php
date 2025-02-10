@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\User;
+use App\Models\Order;
 use App\Models\Restaurant;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -14,6 +15,10 @@ use Illuminate\Support\Facades\Session;
 class AuthController extends Controller
 {
     public function register(Request $request){
+
+        Mail::raw('Test email from Laravel', function ($message) {
+            $message->to('danieloluwasegun1000@gmail.com')->subject('Test Email');
+        });
 
         if($request->account_type == 'customer' ){
 
@@ -53,12 +58,17 @@ class AuthController extends Controller
         
         $email = $request->email;
 
-      
-        Mail::send('emails.user.otp', $details, function ($message) use ($email) {
-            $message->from(config("mail.from.address"), 'Order');
-            $message->to($email,"Order");
-            $message->subject("OTP from bhuorder");
-        });
+            Mail::send('emails.user.otp', $details, function ($message) use ($email) {
+                $message->to($email, "Order")
+                    ->subject("OTP from bhuorder");
+            });
+
+
+            // Mail::send('emails.user.otp', $details, function ($message) use ($email) {
+        //     $message->from(config("mail.from.address"), 'Order');
+        //     $message->to($email,"Order");
+        //     $message->subject("OTP from bhuorder");
+        // });
 
         return response()->json([
             'message'=>'OTP sent successfully, Check email'
@@ -319,6 +329,7 @@ class AuthController extends Controller
     else if($user->account_type == 'admin') {
         $restaurants = Restaurant::all();
         $customers = User::where('account_type', 'customer')->get();
+        $completedOrders = Order::where('status','completed')->get();
 
         return response()->json([
             'message' => 'Logged in Successfully',

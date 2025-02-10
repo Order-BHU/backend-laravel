@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Location;
+use App\Models\Restaurant;
 use Illuminate\Http\Request;
 
 class ProfileController extends Controller
@@ -37,6 +38,12 @@ class ProfileController extends Controller
         $user = auth()->user();
         $user->profile_picture_url = $imagePath;
         $user->save();
+
+        if($user->account_type == 'restaurant'){
+        $restaurant = Restaurant::where('user_id', $user->id)->first();
+        $restaurant->logo = $imagePath;
+        $restaurant->save();
+        }
 
         return response()->json([
             'message'=>"Profile Picture Updated successfully"

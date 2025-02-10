@@ -156,5 +156,36 @@ class RestaurantController extends Controller
     }
     }
 
+    public function deleteMenu($menuId){
+        
+        $user = auth()->user();
+         if($user->account_type =='restaurant'){
+            $restaurant = Restaurant::where('user_id',$user->id)->first();
+            
+            if($user->id!= $restaurant->user_id){
+                return response()->json([
+                    'message'=>"Your not the restaurant owner"
+                ]);
+            }
+
+            $menu = Menu::where('id', $menuId)->first();
+            
+            if (!$menu) {
+                return response()->json([
+                   'message' => 'Menu not found.'
+                ], 404);
+            }
+            
+            $menu->delete();
+            
+            return response()->json([
+                'message' => 'Menu deleted successfully!'
+            ]);
+
+
+    
+        }
+
+    }
     
 }

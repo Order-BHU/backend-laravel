@@ -20,172 +20,172 @@ class AuthController extends Controller
             $message->to('danieloluwasegun1000@gmail.com')->subject('Test Email');
         });
 
-        if($request->account_type == 'customer' ){
+    //     if($request->account_type == 'customer' ){
 
         
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-            'phone_number'=>'required|numeric|unique:users',
-            'phone_number_type'=>'required|in:whatsapp,sms,both',
-            'account_type' => 'required|in:customer,driver'
-            ]);
+    //     $request->validate([
+    //         'name' => 'required|string|max:255',
+    //         'email' => 'required|string|email|max:255|unique:users',
+    //         'password' => 'required|string|min:8',
+    //         'phone_number'=>'required|numeric|unique:users',
+    //         'phone_number_type'=>'required|in:whatsapp,sms,both',
+    //         'account_type' => 'required|in:customer,driver'
+    //         ]);
 
-        // Generate OTP
-        $otp = rand(1000, 9999);
+    //     // Generate OTP
+    //     $otp = rand(1000, 9999);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => $request->password,
-            'phone_number' => $request->phone_number,
-            'phone_number_type' => $request->phone_number_type,
-            'account_type'=>$request->account_type,
-            'otp'=>$otp
-        ]);
+    //     $user = User::create([
+    //         'name' => $request->name,
+    //         'email' => $request->email,
+    //         'password' => $request->password,
+    //         'phone_number' => $request->phone_number,
+    //         'phone_number_type' => $request->phone_number_type,
+    //         'account_type'=>$request->account_type,
+    //         'otp'=>$otp
+    //     ]);
         
-        $user->account_type = $request->account_type;
-        $user->save();
+    //     $user->account_type = $request->account_type;
+    //     $user->save();
 
 
-        $details = array(
-            "name"=>$request->name,
-            "otp"=>$otp
+    //     $details = array(
+    //         "name"=>$request->name,
+    //         "otp"=>$otp
 
-        );
+    //     );
 
         
-        $email = $request->email;
+    //     $email = $request->email;
 
-            // Mail::send('emails.user.otp', $details, function ($message) use ($email) {
-            //     $message->to($email, "Order")
-            //         ->subject("OTP from bhuorder");
-            // });
-
-
-            // Mail::send('emails.user.otp', $details, function ($message) use ($email) {
-        //     $message->from(config("mail.from.address"), 'Order');
-        //     $message->to($email,"Order");
-        //     $message->subject("OTP from bhuorder");
-        // });
-
-        return response()->json([
-            'message'=>'OTP sent successfully, Check email'
-        ],200);
-    }
-    else if($request->account_type == "restaurant"){
+    //         // Mail::send('emails.user.otp', $details, function ($message) use ($email) {
+    //         //     $message->to($email, "Order")
+    //         //         ->subject("OTP from bhuorder");
+    //         // });
 
 
-            $request->validate([
-                'owners_name' => 'required|string|max:255',
-                'restaurant_name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users',
-                'password' => 'required|string|min:8',
-                'phone_number' => 'required|numeric|unique:users',
-                'phone_number_type' => 'required|in:whatsapp,sms,both',
-                'account_type'=>'required'
+    //         // Mail::send('emails.user.otp', $details, function ($message) use ($email) {
+    //     //     $message->from(config("mail.from.address"), 'Order');
+    //     //     $message->to($email,"Order");
+    //     //     $message->subject("OTP from bhuorder");
+    //     // });
 
-            ]);
-
-            // Generate OTP
-            $otp = rand(1000, 9999);
-
-            $user = User::create([
-                'name' => $request->owners_name,
-                'email' => $request->email,
-                'password' => $request->password,
-                'phone_number' => $request->phone_number,
-                'phone_number_type' => $request->phone_number_type,
-                'otp' => $otp,
-            ]);
-            $user->account_type = $request->account_type;
-            $user->save();
-
-            $restaurant = Restaurant::create([
-                'name'=> $request->restaurant_name,
-                'user_id'=>$user->id,
-
-            ]);
+    //     return response()->json([
+    //         'message'=>'OTP sent successfully, Check email'
+    //     ],200);
+    // }
+    // else if($request->account_type == "restaurant"){
 
 
-            $details = array(
-                "name" => $request->name,
-                "otp" => $otp
+    //         $request->validate([
+    //             'owners_name' => 'required|string|max:255',
+    //             'restaurant_name' => 'required|string|max:255',
+    //             'email' => 'required|string|email|max:255|unique:users',
+    //             'password' => 'required|string|min:8',
+    //             'phone_number' => 'required|numeric|unique:users',
+    //             'phone_number_type' => 'required|in:whatsapp,sms,both',
+    //             'account_type'=>'required'
 
-            );
+    //         ]);
 
+    //         // Generate OTP
+    //         $otp = rand(1000, 9999);
 
-            $email = $request->email;
+    //         $user = User::create([
+    //             'name' => $request->owners_name,
+    //             'email' => $request->email,
+    //             'password' => $request->password,
+    //             'phone_number' => $request->phone_number,
+    //             'phone_number_type' => $request->phone_number_type,
+    //             'otp' => $otp,
+    //         ]);
+    //         $user->account_type = $request->account_type;
+    //         $user->save();
 
+    //         $restaurant = Restaurant::create([
+    //             'name'=> $request->restaurant_name,
+    //             'user_id'=>$user->id,
 
-            Mail::send('emails.user.otp', $details, function ($message) use ($email) {
-                $message->from(config("mail.from.address"), 'Order');
-                $message->to($email, "Order");
-                $message->subject("OTP from bhuorder");
-            });
-
-            return response()->json([
-                'message' => 'OTP sent successfully, Check email'
-            ], 200);
-    }
-    else if($request->account_type == "driver")
-    {
-
-            $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users',
-                'password' => 'required|string|min:8',
-                'phone_number' => 'required|numeric|unique:users',
-                'phone_number_type' => 'required|in:whatsapp,sms,both',
-                'account_type' => 'required'
-            ]);
-
-            // Generate OTP
-            $otp = rand(1000, 9999);
-
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => $request->password,
-                'phone_number' => $request->phone_number,
-                'phone_number_type' => $request->phone_number_type,
-                'status' => 'online', //Driver is online by default
-                'account_type' => $request->account_type,
-                'otp' => $otp
-            ]);
-
-            $user->account_type = $request->account_type;
-            $user->save();
+    //         ]);
 
 
-            $details = array(
-                "name" => $request->name,
-                "otp" => $otp
+    //         $details = array(
+    //             "name" => $request->name,
+    //             "otp" => $otp
 
-            );
-
-
-            $email = $request->email;
+    //         );
 
 
-            Mail::send('emails.user.otp', $details, function ($message) use ($email) {
-                $message->from(config("mail.from.address"), 'Order');
-                $message->to($email, "Order");
-                $message->subject("OTP from bhuorder");
-            });
+    //         $email = $request->email;
 
-            return response()->json([
-                'message' => 'OTP sent successfully, Check email'
-            ], 200);
+
+    //         Mail::send('emails.user.otp', $details, function ($message) use ($email) {
+    //             $message->from(config("mail.from.address"), 'Order');
+    //             $message->to($email, "Order");
+    //             $message->subject("OTP from bhuorder");
+    //         });
+
+    //         return response()->json([
+    //             'message' => 'OTP sent successfully, Check email'
+    //         ], 200);
+    // }
+    // else if($request->account_type == "driver")
+    // {
+
+    //         $request->validate([
+    //             'name' => 'required|string|max:255',
+    //             'email' => 'required|string|email|max:255|unique:users',
+    //             'password' => 'required|string|min:8',
+    //             'phone_number' => 'required|numeric|unique:users',
+    //             'phone_number_type' => 'required|in:whatsapp,sms,both',
+    //             'account_type' => 'required'
+    //         ]);
+
+    //         // Generate OTP
+    //         $otp = rand(1000, 9999);
+
+    //         $user = User::create([
+    //             'name' => $request->name,
+    //             'email' => $request->email,
+    //             'password' => $request->password,
+    //             'phone_number' => $request->phone_number,
+    //             'phone_number_type' => $request->phone_number_type,
+    //             'status' => 'online', //Driver is online by default
+    //             'account_type' => $request->account_type,
+    //             'otp' => $otp
+    //         ]);
+
+    //         $user->account_type = $request->account_type;
+    //         $user->save();
+
+
+    //         $details = array(
+    //             "name" => $request->name,
+    //             "otp" => $otp
+
+    //         );
+
+
+    //         $email = $request->email;
+
+
+    //         Mail::send('emails.user.otp', $details, function ($message) use ($email) {
+    //             $message->from(config("mail.from.address"), 'Order');
+    //             $message->to($email, "Order");
+    //             $message->subject("OTP from bhuorder");
+    //         });
+
+    //         return response()->json([
+    //             'message' => 'OTP sent successfully, Check email'
+    //         ], 200);
  
-    }
+    // }
   
-    else {
-        return response()->json([
-            'message'=>'Account type not available'
-        ]);
-    }
+    // else {
+    //     return response()->json([
+    //         'message'=>'Account type not available'
+    //     ]);
+    // }
 
 
     }

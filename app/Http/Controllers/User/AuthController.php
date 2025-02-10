@@ -58,10 +58,10 @@ class AuthController extends Controller
         
         $email = $request->email;
 
-            Mail::send('emails.user.otp', $details, function ($message) use ($email) {
-                $message->to($email, "Order")
-                    ->subject("OTP from bhuorder");
-            });
+            // Mail::send('emails.user.otp', $details, function ($message) use ($email) {
+            //     $message->to($email, "Order")
+            //         ->subject("OTP from bhuorder");
+            // });
 
 
             // Mail::send('emails.user.otp', $details, function ($message) use ($email) {

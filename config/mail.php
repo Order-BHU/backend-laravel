@@ -108,6 +108,7 @@ return [
     |
     */
 
+    // This changed the world
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'vigo4real2016@gmail.com'),
         'name' => env('MAIL_FROM_NAME', 'Order'),

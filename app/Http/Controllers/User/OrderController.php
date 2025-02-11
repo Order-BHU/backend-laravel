@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Restaurant;
 use App\Models\Order;
 use App\Models\Cart;
+use App\Models\Menu;
 use App\Models\User;
 use Illuminate\Support\Str;
 
@@ -119,9 +120,40 @@ class OrderController extends Controller
             } elseif ($orderType == 'accepted') {
                 $orders = Order::where('restaurant_id', $restaurant->id)
                     ->where('status', 'accepted')->get();
+                $ordersArray = [];
+                foreach ($orders as $order) {
+                    $restaurant = Restaurant::where('id', $order->restaurant_id)->first();
+
+                    if (!$restaurant) {
+                        continue;
+                    }
+
+                    $menus = [];
+                    foreach($order->items as $item){
+                        $menu = Menu::where('id', $item['menu_id'])->first();
+
+                        $menuArray[]= [
+                            'item_name' => $menu->name,
+                            'item_price' => $menu->price,
+                            'quantity' => $item['quantity']
+                        ];
+                        array_push($menus, $menuArray);
+                        
+
+                    }
+
+                    $orderArray[] = [
+                        'order_id' => $order->id,
+                        'items' => $menus,
+                        'total' => $order->total,
+                        'order_date' => $order->order_date
+                    ];
+                    array_push($ordersArray, $orderArray);
+           
+                }
 
                 return response()->json([
-                    'orders' => $orders
+                    'orders' => $ordersArray,
                 ], 200);
             } elseif ($orderType == 'history') {
                 $orders = Order::where('restaurant_id', $restaurant->id)

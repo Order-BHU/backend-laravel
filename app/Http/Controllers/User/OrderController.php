@@ -36,7 +36,7 @@ class OrderController extends Controller
                 'items' => $request->items,
                 'restaurant_id' => $restaurantId,
                 'total' => $request->total,
-                'customer_location' => $request->location,
+                'customer_location' => "Bingham St",
                 'status' => 'pending',
                 'order_code' => $randomCode,
             ]);

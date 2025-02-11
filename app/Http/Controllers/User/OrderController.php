@@ -22,7 +22,8 @@ class OrderController extends Controller
         ]);
 
         // Generate a random 6-character alphanumeric code
-        $randomCode = Str::random(5);
+        $randomCode = rand(1000, 9999);
+
 
         // Checks for Pending Order
         $pendingOrder = Order::where('user_id', $request->user()->id)

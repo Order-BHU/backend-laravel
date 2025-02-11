@@ -21,13 +21,13 @@ class CartController extends Controller
         if(!$inCart){
             $cart = Cart::create([
                 'menu_id' => $menuId,
-                'quantity' => 1,
                 'user_id' => $request->user()->id
             ]);
         }
         else{
-            $inCart->quantity = $inCart->quantity + 1;
-            $inCart->save(); 
+           return response()->json([
+            'message' => 'Item already in cart',
+           ]);
         }
 
         return response()->json([
@@ -45,15 +45,10 @@ class CartController extends Controller
                 'error' => 'Cart Item not found'
             ], 404);
         }
-        if($cartItem->quantity == 1  )   {
+        
         $cartItem->delete();
     
-        }
-        else{
-            $cartItem->quantity = $cartItem->quantity - 1;
-            $cartItem->save();
-        }
-
+      
         return response()->json([
             'message' => "Cart Item removed",
         ], 200);

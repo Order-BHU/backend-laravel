@@ -7,10 +7,7 @@
 </head>
 <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4; line-height: 1.6;">
     <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 40px; border-radius: 8px; margin-top: 40px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-        <div style="text-align: center; margin-bottom: 30px;">
-<blockquote class="imgur-embed-pub" lang="en" data-id="a/iRn0M17"><a href="//imgur.com/a/iRn0M17">Order Logo</a>
-</blockquote>
-<script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>        </div>
+        
         
         <h1 style="color: #333333; font-size: 24px; margin-bottom: 20px; text-align: center;">Hey {{$name}}! Verify Your Identity</h1>
         

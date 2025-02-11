@@ -84,6 +84,9 @@ class AuthController extends Controller
                 'password' => 'required|string|min:8',
                 'phone_number' => 'required|numeric|unique:users',
                 'phone_number_type' => 'required|in:whatsapp,sms,both',
+                'account_no'=>'required|string',
+                'bank_name'=>'required|string',
+                'bank_code' => 'required|string',
                 'account_type'=>'required'
 
             ]);
@@ -105,6 +108,10 @@ class AuthController extends Controller
             $restaurant = Restaurant::create([
                 'name'=> $request->restaurant_name,
                 'user_id'=>$user->id,
+                'account_no'=>$request->account_no,
+                'bank_name'=>$request->bank_name,
+                'bank_code'=>$request->bank_code,
+                
 
             ]);
 

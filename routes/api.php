@@ -34,6 +34,7 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
                 Route::post('{restaurantId}/add-menu', 'RestaurantController@addMenu');
                 Route::post('{menuId}/edit-menu', 'RestaurantController@editMenu');
                 Route::get('{restaurantId}/my-orders', 'OrderController@myOrders');
+                Route::get('{menuId}/delete-menu', 'RestaurantController@deleteMenu');
 
                 // Cart routes
                 Route::post('{menuId}/add-to-cart', 'CartController@addToCart');
@@ -51,6 +52,7 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
                 // Authentication routes
                 Route::post('/logout', 'AuthController@logout');
                 Route::post('/update-profile-picture', 'ProfileController@updateProfilePicture');
+                Route::post('/edit-profile', 'ProfileController@editProfile'); // Added edit profile route
 
 
             });

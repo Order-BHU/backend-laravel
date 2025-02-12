@@ -14,7 +14,13 @@ use Illuminate\Http\Request;
 class RestaurantController extends Controller
 {
     public function restaurantList(){
-        $allRestaurants = Restaurant::select('id','name','cover_picture')->get();
+        $allRestaurants = Restaurant::select('id','name','logo')->get();
+
+        // Update the logo field to include the full URL path
+        $allRestaurants->map(function ($restaurant) {
+            $restaurant->logo = asset('public/storage/' . $restaurant->logo);
+            return $restaurant;
+        });
 
         return response()->json([
             'restaurant_list'=>$allRestaurants

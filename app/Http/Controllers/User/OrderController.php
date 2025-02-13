@@ -28,9 +28,9 @@ class OrderController extends Controller
 
         // Checks for Pending Order
         $pendingOrder = Order::where('user_id', $request->user()->id)
-                       ->where('status', '!=', 'completed')->first();
+            ->where('status', '!=', 'completed')->first();
 
-        if(!$pendingOrder){
+        if (!$pendingOrder) {
             // Creates a new order with the provided items, restaurant_id and user_id
             $order = Order::create([
                 'user_id' => $request->user()->id,
@@ -51,18 +51,17 @@ class OrderController extends Controller
                 $user->otp = $randomCode;
                 $user->save();
             }
-        }
-        else {
+        } else {
             return response([
-                'message'=>'You have a pending order, complete your order to order again'
-            ],200);
+                'message' => 'You have a pending order, complete your order to order again'
+            ], 200);
         }
-   
+
         return response([
             'message' => 'Checkout Successfully',
             'order_id' => $order->id,
-            'code' =>$randomCode
-        ],200);
+            'code' => $randomCode
+        ], 200);
     }
 
     public function driverStatusUpdate($status)
@@ -129,27 +128,24 @@ class OrderController extends Controller
                     }
 
                     $menus = [];
-                    foreach($order->items as $item){
+                    foreach ($order->items as $item) {
                         $menu = Menu::where('id', $item['menu_id'])->first();
 
-                        $menuArray[]= [
+                        $menuArray = [
                             'item_name' => $menu->name,
                             'item_price' => $menu->price,
                             'quantity' => $item['quantity']
                         ];
                         array_push($menus, $menuArray);
-                        
-
                     }
 
-                    $orderArray[] = [
+                    $orderArray = [
                         'order_id' => $order->id,
                         'items' => $menus,
                         'total' => $order->total,
                         'order_date' => $order->order_date
                     ];
                     array_push($ordersArray, $orderArray);
-           
                 }
 
                 return response()->json([
@@ -397,18 +393,19 @@ class OrderController extends Controller
     }
 
 
-    public function trackOrder($orderId){
+    public function trackOrder($orderId)
+    {
 
         $order = Order::where('user_id', $orderId)->where('user_id', auth()->user()->id)->first();
 
         if (!$order) {
             return response()->json([
-               'message' => 'Order not found'
-            ],200);
+                'message' => 'Order not found'
+            ], 200);
         }
 
         $restaurant = Restaurant::where('id', $order->restaurant_id)->first();
-        if(!is_null($order->driver_id)){
+        if (!is_null($order->driver_id)) {
             $driver = User::where('id', $order->driver_id)->first();
 
             return response()->json([
@@ -420,17 +417,16 @@ class OrderController extends Controller
                 'driver_profile_photo' => asset('public/storage/', $driver->profile_picture_url),
                 'items' => $order->items
             ], 200);
-        }
-        else {
+        } else {
             return response()->json([
                 'order_id' => $order->id,
-               'restaurant_name' => $restaurant->name,
-               'status' => $order->status,
+                'restaurant_name' => $restaurant->name,
+                'status' => $order->status,
                 'items' => $order->items
             ], 200);
         }
-      
+
     }
 
-  
+
 }

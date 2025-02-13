@@ -11,6 +11,7 @@ use App\Models\Restaurant;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Http;
 
 class AuthController extends Controller
 {
@@ -88,11 +89,27 @@ class AuthController extends Controller
                 'bank_name'=>'required|string',
                 'bank_code' => 'required|string',
                 'account_type'=>'required'
-
             ]);
 
             // Generate OTP
             $otp = rand(1000, 9999);
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . env('PAYSTACK_SECRET_KEY'),
+                'Content-Type' => 'application/json',
+            ])->post('https://api.paystack.co/subaccount', [
+                        'business_name' => $request->restaurant_name,
+                        'bank_code' => $request->bank_code,
+                        'account_number' => $request->account_number,
+                        'percentage_charge' => 10,
+                    ]);
+
+
+            $data = $response->json();
+            if (!$data['status']) {
+                return response()->json(['error' => $data['message']], 400);
+            }
+
 
             $user = User::create([
                 'name' => $request->owners_name,
@@ -111,7 +128,7 @@ class AuthController extends Controller
                 'account_no'=>$request->account_no,
                 'bank_name'=>$request->bank_name,
                 'bank_code'=>$request->bank_code,
-                
+                'subaccount_code'=>$data['data']['subaccount_code'],
 
             ]);
 
@@ -119,7 +136,6 @@ class AuthController extends Controller
             $details = array(
                 "name" => $request->name,
                 "otp" => $otp
-
             );
 
 

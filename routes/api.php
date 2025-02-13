@@ -56,6 +56,12 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
                 Route::post('/edit-profile', 'ProfileController@editProfile'); // Added edit profile route
 
 
+                // Payment routes
+                Route::get('/bank-list', 'PaymentController@bankList');
+                Route::post('/resolve-bank', 'PaymentController@resolveBank'); // Added resolve bank
+
+
+
             });
            
 

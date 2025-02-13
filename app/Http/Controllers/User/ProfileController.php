@@ -19,6 +19,7 @@ class ProfileController extends Controller
         return response()->json([
             'message' => $user
         ]);
+        
     }
 
     public function getLocations()

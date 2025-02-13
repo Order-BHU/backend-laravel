@@ -51,6 +51,7 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
 
                 // Authentication routes
                 Route::post('/logout', 'AuthController@logout');
+                Route::get('/dashboard', 'ProfileController@myDashboard');
                 Route::post('/update-profile-picture', 'ProfileController@updateProfilePicture');
                 Route::post('/edit-profile', 'ProfileController@editProfile'); // Added edit profile route
 

@@ -13,8 +13,11 @@ class ProfileController extends Controller
 {
     public function myDashboard(Request $request)
     {
+        $user = $request->user();
+        $user->profile_picture_url = asset('public/storage/' . $user->profile_picture_url);
+
         return response()->json([
-            'message' => $request->user()
+            'message' => $user
         ]);
     }
 

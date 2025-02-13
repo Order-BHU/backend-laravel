@@ -399,7 +399,7 @@ class OrderController extends Controller
 
     public function trackOrder($orderId){
 
-        $order = Order::where('id', $orderId)->where('user_id', auth()->user()->id)->first();
+        $order = Order::where('user_id', $orderId)->where('user_id', auth()->user()->id)->first();
 
         if (!$order) {
             return response()->json([

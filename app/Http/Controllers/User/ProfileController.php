@@ -60,7 +60,7 @@ class ProfileController extends Controller
             'profile_picture' => 'image|mimes:jpeg,png,jpg,gif,svg',
             'name' => 'string|max:255',
             'phone_number_type' => 'string|max:255',
-            'email' => 'string|email|max:255|unique:users,email,' . auth()->id(),
+            // 'email' => 'string|email|max:255|unique:users,email,' . auth()->id(),
         ]);
 
         if ($validator->fails()) {
@@ -92,13 +92,13 @@ class ProfileController extends Controller
             $user->phone_number_type = $request->phone_number_type;
         }
 
-        // Check if email is updated
-        if ($request->email && $user->email !== $request->email) {
-            $user->email = $request->email;
-            $user->email_verified_at = null; // Reset email verification
-            $authController = new AuthController();
-            $authController->getOtp($request); // Call getOtp function
-        }
+        // // Check if email is updated
+        // if ($request->email && $user->email !== $request->email) {
+        //     $user->email = $request->email;
+        //     $user->email_verified_at = null; // Reset email verification
+        //     $authController = new AuthController();
+        //     $authController->getOtp($request); // Call getOtp function
+        // }
 
         $user->save();
 

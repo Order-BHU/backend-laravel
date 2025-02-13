@@ -60,6 +60,7 @@ class ProfileController extends Controller
             'profile_picture' => 'image|mimes:jpeg,png,jpg,gif,svg',
             'name' => 'string|max:255',
             'phone_number_type' => 'string|max:255',
+            'phone_number' => 'string|max:12',
             // 'email' => 'string|email|max:255|unique:users,email,' . auth()->id(),
         ]);
 
@@ -90,6 +91,9 @@ class ProfileController extends Controller
 
         if ($request->phone_number_type) {
             $user->phone_number_type = $request->phone_number_type;
+        }
+        if ($request->phone_number) {
+            $user->phone_number = $request->phone_number;
         }
 
         // // Check if email is updated

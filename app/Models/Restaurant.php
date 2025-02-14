@@ -12,7 +12,11 @@ class Restaurant extends Model
         'name',
         'user_id',
         'logo',
-        'cover_picture'
+        'cover_picture',
+        'account_no',
+        'bank_name',
+        'bank_code',
+        'subaccount_code'
     ];
 
    

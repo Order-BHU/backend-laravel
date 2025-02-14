@@ -132,7 +132,7 @@ class OrderController extends Controller
                         $menu = Menu::where('id', $item['menu_id'])->first();
 
                         $menuArray = [
-                            'item_name' => $menu->name,
+                            'menu_name' => $menu->name,
                             'item_price' => $menu->price,
                             'quantity' => $item['quantity']
                         ];
@@ -141,6 +141,7 @@ class OrderController extends Controller
 
                     $orderArray = [
                         'order_id' => $order->id,
+                        'status'=>$order->status,
                         'items' => $menus,
                         'total' => $order->total,
                         'order_date' => $order->order_date

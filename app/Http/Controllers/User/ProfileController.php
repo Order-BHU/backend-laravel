@@ -16,8 +16,13 @@ class ProfileController extends Controller
         $user = $request->user();
         $user->profile_picture_url = asset('public/storage/' . $user->profile_picture_url);
 
+        if ($user->account_type == 'restaurant') {
+            $restaurant = Restaurant::where('user_id', $user->id)->first();
+        
+        }
         return response()->json([
-            'message' => $user
+            'message' => $user,
+            'restaurant_name' => $restaurant->name
         ]);
         
     }

@@ -100,7 +100,7 @@ class AuthController extends Controller
             ])->post('https://api.paystack.co/subaccount', [
                         'business_name' => $request->restaurant_name,
                         'bank_code' => $request->bank_code,
-                        'account_number' => $request->account_number,
+                        'account_number' => $request->account_no,
                         'percentage_charge' => 10,
                     ]);
 

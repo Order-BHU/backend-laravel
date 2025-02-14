@@ -51,7 +51,8 @@ class OrderController extends Controller
         $request->validate([
             'items' => 'required|array',
             'total' => 'required|numeric',
-            'location' => 'required'
+            'location' => 'required',
+            'reference'=>'required'
         ]);
 
         // Generate a random 6-character alphanumeric code
@@ -68,7 +69,16 @@ class OrderController extends Controller
 
             $restaurant = Restaurant::where('id', $restaurantId)->first();
 
-          
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . env('PAYSTACK_SECRET_KEY'),
+            ])->get("https://api.paystack.co/transaction/verify/" . $request->reference);
+
+            $data = $response->json();
+
+            // Checks if the payment was successful
+            if ($data['status'] && $data['data']['status'] === 'success') {
+           
             // Creates a new order with the provided items, restaurant_id and user_id
             $order = Order::create([
                 'user_id' => $request->user()->id,
@@ -92,6 +102,14 @@ class OrderController extends Controller
                 $user->otp = $randomCode;
                 $user->save();
             }
+
+        }
+        else{
+            return response([
+               'message' => 'Payment Failed',
+                'data' => $data
+            ], 400);
+        }
         } else {
             return response([
                 'message' => 'You have a pending order, complete your order to order again'

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use illumiate\Support\Facades\Http;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Restaurant;
@@ -13,6 +14,37 @@ use Illuminate\Support\Str;
 
 class OrderController extends Controller
 {
+
+    public function initializeCheckout(Request $request, $restaurantId){
+
+
+        $request->validate([
+            'total' => 'required|numeric',
+            'callback_id' => 'required'
+        ]);
+        $user = $request->user();
+        $restaurant = Restaurant::where('id', $restaurantId)->first();
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . env('PAYSTACK_SECRET_KEY'),
+            'Content-Type' => 'application/json',
+        ])->post('https://api.paystack.co/transaction/initialize', [
+                    'email' => $user->email,
+                    'amount' => $request->total * 100, // Amount in kobo
+                    'subaccount' => $restaurant->subaccount_code,
+                    'transaction_charge' => 250 * 100, // Charge amount in kobo
+                    'callback_url'=> 'https://bhuorder.netlify.app/menu/' . $request->callback_id
+
+                ]);
+
+
+        $data = $response->json();
+        if (!$data['status']) {
+            return response()->json($response->json(), 400);
+        }
+
+        return response()->json(['data' => $data['data']], 200);
+
+    }
     public function checkout(Request $request, $restaurantId)
     {
         // Validates the checkout request
@@ -25,12 +57,18 @@ class OrderController extends Controller
         // Generate a random 6-character alphanumeric code
         $randomCode = rand(1000, 9999);
 
+        $user = $request->user();
 
         // Checks for Pending Order
         $pendingOrder = Order::where('user_id', $request->user()->id)
             ->where('status', '!=', 'completed')->first();
 
         if (!$pendingOrder) {
+
+
+            $restaurant = Restaurant::where('id', $restaurantId)->first();
+
+          
             // Creates a new order with the provided items, restaurant_id and user_id
             $order = Order::create([
                 'user_id' => $request->user()->id,
@@ -41,6 +79,9 @@ class OrderController extends Controller
                 'status' => 'pending',
                 'order_code' => $randomCode,
             ]);
+
+           
+                
 
             if ($order) {
                 // Removes the cart items for the restaurant

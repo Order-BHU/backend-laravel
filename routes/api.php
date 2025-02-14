@@ -42,6 +42,7 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
                 Route::get('/view-cart', 'CartController@viewCart');
 
                 // Order routes
+                Route::post('{restaurantId}/initialize-checkout', 'OrderController@initializeCheckout');
                 Route::post('{restaurantId}/checkout', 'OrderController@checkout');
                 Route::post('{status}/driver-status-update', 'OrderController@driverStatusUpdate');
                 Route::post('{orderId}/{status}/update-order-status', 'OrderController@updateOrderStatus');

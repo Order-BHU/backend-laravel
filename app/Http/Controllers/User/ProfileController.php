@@ -18,12 +18,16 @@ class ProfileController extends Controller
 
         if ($user->account_type == 'restaurant') {
             $restaurant = Restaurant::where('user_id', $user->id)->first();
-        
-        }
-        return response()->json([
+          return response()->json([
             'message' => $user,
             'restaurant_name' => $restaurant->name
         ]);
+        }
+
+        return response()->json([
+            'message' => $user,
+        ]);
+      
         
     }
 

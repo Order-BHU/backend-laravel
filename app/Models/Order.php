@@ -8,7 +8,7 @@ class Order extends Model
 {
     protected $table = 'orders';
 
-    const ALLOWED_OPTIONS = ['pending','ready','completed','accepted'];
+    const ALLOWED_OPTIONS = ['pending','ready','completed','delivering','accepted'];
 
     protected $fillable = [
            'user_id',

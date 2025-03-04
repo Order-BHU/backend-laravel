@@ -414,7 +414,25 @@ class OrderController extends Controller
                 ], 400);
             }
         } elseif ($request->user()->account_type == 'driver') {
-            if ($status == 'completed') {
+
+            if($status == 'delivering'){
+                $order = Order::where('id', $orderId)->where('driver_id', $request->user()->id)->first();
+
+                if (!$order) {
+                    return response()->json([
+                       'message' => 'Order not found or not assigned to this driver'
+                    ], 404);
+                }
+
+                $order->status = $status;
+                $order->save();
+
+                return response()->json([
+                   'message' => 'Status updated successfully'
+                ], 200);
+
+            }
+            else if ($status == 'completed') {
                 $request->validate([
                     'code' => 'required'
                 ]);

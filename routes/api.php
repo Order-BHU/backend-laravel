@@ -35,6 +35,7 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
                 Route::post('{menuId}/edit-menu', 'RestaurantController@editMenu');
                 Route::get('{restaurantId}/my-orders', 'OrderController@myOrders');
                 Route::post('{menuId}/delete-menu', 'RestaurantController@deleteMenu');
+                Route::post('{menuId}/update-availability', 'RestaurantController@updateAvailability');
 
                 // Cart routes
                 Route::post('{menuId}/add-to-cart', 'CartController@addToCart');

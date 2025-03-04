@@ -84,7 +84,7 @@ class OrderController extends Controller
                 'user_id' => $request->user()->id,
                 'items' => $request->items,
                 'restaurant_id' => $restaurantId,
-                'total' => $request->total,
+                'total' => $request->total/100,
                 'customer_location' => $request->location,
                 'status' => 'pending',
                 'order_code' => $randomCode,
@@ -456,13 +456,15 @@ class OrderController extends Controller
     public function trackOrder($orderId)
     {
 
-        $order = Order::where('user_id', $orderId)->where('user_id', auth()->user()->id)->first();
+        $order = Order::where('id', $orderId)->where('user_id', auth()->user()->id)->first();
 
-        if (!$order) {
+        if (!$order || $order->status == "completed") {
             return response()->json([
-                'message' => 'Order not found'
+                'message' => 'No Active Order'
             ], 200);
         }
+
+       
 
         $restaurant = Restaurant::where('id', $order->restaurant_id)->first();
         if (!is_null($order->driver_id)) {

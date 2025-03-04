@@ -13,8 +13,9 @@ use Illuminate\Http\Request;
 
 class RestaurantController extends Controller
 {
-    public function restaurantList(){
-        $allRestaurants = Restaurant::select('id','name','logo')->get();
+    public function restaurantList()
+    {
+        $allRestaurants = Restaurant::select('id', 'name', 'logo')->get();
 
         // Update the logo field to include the full URL path
         $allRestaurants->map(function ($restaurant) {
@@ -23,20 +24,22 @@ class RestaurantController extends Controller
         });
 
         return response()->json([
-            'restaurant_list'=>$allRestaurants
+            'restaurant_list' => $allRestaurants
         ]);
     }
 
-    public function categories(){
-        $categories = Category::select('id','name')->get();
+    public function categories()
+    {
+        $categories = Category::select('id', 'name')->get();
 
         return response()->json([
-            'categories'=> $categories
+            'categories' => $categories
         ]);
     }
 
 
-    public function menuList($restaurantId){
+    public function menuList($restaurantId)
+    {
 
 
 
@@ -59,28 +62,28 @@ class RestaurantController extends Controller
 
 
         return response()->json([
-            'menu'=> $categories,
-        ],200);
+            'menu' => $categories,
+        ], 200);
     }
 
-    public function addMenu(Request $request, $restaurantId){
-        if($request->user()->account_type == 'restaurant'){
-            $restaurant = Restaurant::where('user_id',$request->user()->id)->first();
+    public function addMenu(Request $request, $restaurantId)
+    {
+        if ($request->user()->account_type == 'restaurant') {
+            $restaurant = Restaurant::where('user_id', $request->user()->id)->first();
 
-            if($request->user()->id != $restaurant->user_id)
-            {
+            if ($request->user()->id != $restaurant->user_id) {
                 return response()->json([
-                    'message'=>"Your not the restaurant owner"
+                    'message' => "Your not the restaurant owner"
                 ]);
             }
 
-        $request->validate([
-            'name'=> 'required|string',
-            'description'=>'required|string',
-            'category_id'=>'required',
-            'price'=>'required',
-            'image'=>'required|image|mimes:jpg,png,jpeg,gif,svg'
-        ]);
+            $request->validate([
+                'name' => 'required|string',
+                'description' => 'required|string',
+                'category_id' => 'required',
+                'price' => 'required',
+                'image' => 'required|image|mimes:jpg,png,jpeg,gif,svg'
+            ]);
 
             // Handle image upload
             $imagePath = $request->file('image')->store('image', 'public');
@@ -90,7 +93,7 @@ class RestaurantController extends Controller
                 'name' => $request->name,
                 'description' => $request->description,
                 'restaurant_id' => $restaurantId,
-                'price'=>$request->price,
+                'price' => $request->price,
                 'category_id' => $request->category_id,
                 'image' => $imagePath
             ]);
@@ -99,30 +102,29 @@ class RestaurantController extends Controller
                 'message' => 'Menu created successfully!',
                 'menu' => $menu
             ], 201);
-    }
-    else {
-        return response()->json([
-            'message'=>'User has no acess'
-        ],500);
-    }
+        } else {
+            return response()->json([
+                'message' => 'User has no acess'
+            ], 500);
+        }
 
 
     }
 
-    public function editMenu(Request $request,$menuId){
-        
-         if($request->user()->account_type == 'restaurant'){
-            $restaurant = Restaurant::where('user_id',$request->user()->id)->first();
+    public function editMenu(Request $request, $menuId)
+    {
 
-            if($request->user()->id != $restaurant->user_id)
-            {
+        if ($request->user()->account_type == 'restaurant') {
+            $restaurant = Restaurant::where('user_id', $request->user()->id)->first();
+
+            if ($request->user()->id != $restaurant->user_id) {
                 return response()->json([
-                    'message'=>"Your not the restaurant owner"
+                    'message' => "Your not the restaurant owner"
                 ]);
             }
-        
-        // Find the menu by ID
-        $menu = Menu::where('id',$menuId)->first();
+
+            // Find the menu by ID
+            $menu = Menu::where('id', $menuId)->first();
 
             // Check if the menu exists
             if (!$menu) {
@@ -145,53 +147,79 @@ class RestaurantController extends Controller
                 if ($key === 'image' && $request->hasFile('image')) {
                     // Handle image upload
                     $menu->image = $request->file('image')->store('image', 'public');
-                } else if($key) {
+                } else if ($key) {
                     // Update other fields
                     $menu->$key = $value;
                 }
             }
 
-        // Save the updated menu
-        $menu->save();
+            // Save the updated menu
+            $menu->save();
 
-        // Return a success response
-        return response()->json([
-            'message' => 'Menu updated successfully!',
-            'menu' => $menu
-        ]);
-    }
+            // Return a success response
+            return response()->json([
+                'message' => 'Menu updated successfully!',
+                'menu' => $menu
+            ]);
+        }
     }
 
-    public function deleteMenu($menuId){
-        
+    public function deleteMenu($menuId)
+    {
+
         $user = auth()->user();
-         if($user->account_type =='restaurant'){
-            $restaurant = Restaurant::where('user_id',$user->id)->first();
-            
-            if($user->id!= $restaurant->user_id){
+        if ($user->account_type == 'restaurant') {
+            $restaurant = Restaurant::where('user_id', $user->id)->first();
+
+            if ($user->id != $restaurant->user_id) {
                 return response()->json([
-                    'message'=>"Your not the restaurant owner"
+                    'message' => "Your not the restaurant owner"
                 ]);
             }
 
             $menu = Menu::where('id', $menuId)->first();
-            
+
             if (!$menu) {
                 return response()->json([
-                   'message' => 'Menu not found.'
+                    'message' => 'Menu not found.'
                 ], 404);
             }
-            
+
             $menu->delete();
-            
+
             return response()->json([
                 'message' => 'Menu deleted successfully!'
             ]);
 
 
-    
+
         }
 
     }
-    
+
+    public function updateAvailability(Request $request, $menuId)
+    {
+        // Validate the request, expecting a boolean for 'available'
+        $data = $request->validate([
+            'is_available' => 'required|boolean',
+        ]);
+
+        // Fetch the menu item (assuming you have a Menu model)
+        $menu = Menu::findOrFail($menuId);
+
+        if (!$menu) {
+            return response()->json([
+                'message' => 'Menu not found.'
+            ], 404);
+        }
+
+        // Update the availability status
+        $menu->is_available = $data['is_available'];
+        $menu->save();
+
+        return response()->json([
+            'message' => 'Menu availability updated successfully',
+            'menu' => $menu
+        ]);
+    }
 }

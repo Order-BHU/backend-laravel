@@ -68,6 +68,7 @@ class CartController extends Controller
             $item = [
                 'menu_id'=> $menu->id,
                 'item_price'=> $menu->price,
+                'is_available'=> $menu->is_available,
                 'item_picture' => $imageUrl,
                 'item_name' => $menu->name,
                 'item_description' => $menu->description,

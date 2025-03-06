@@ -11,6 +11,8 @@ use App\Models\Cart;
 use App\Models\Menu;
 use App\Models\User;
 use Illuminate\Support\Str;
+use App\Models\Transactions;
+use App\Models\Wallet;
 
 class OrderController extends Controller
 {
@@ -30,8 +32,8 @@ class OrderController extends Controller
         ])->post('https://api.paystack.co/transaction/initialize', [
                     'email' => $user->email,
                     'amount' => $request->total * 100, // Amount in kobo
-                    'subaccount' => $restaurant->subaccount_code,
-                    'transaction_charge' => 250 * 100, // Charge amount in kobo
+                    // 'subaccount' => $restaurant->subaccount_code, 2 lines are for split payments
+                    // 'transaction_charge' => 250 * 100,  Charge amount in kobo
                     'callback_url'=> 'https://bhuorder.netlify.app/menu/' . $request->callback_id
 
                 ]);
@@ -55,6 +57,9 @@ class OrderController extends Controller
             'reference'=>'required'
         ]);
 
+        // Converts the total amount to naira
+        $total = $request->total/100;
+
         // Generate a random 6-character alphanumeric code
         $randomCode = rand(1000, 9999);
 
@@ -76,15 +81,33 @@ class OrderController extends Controller
 
             $data = $response->json();
 
+
             // Checks if the payment was successful
             if ($data['status'] && $data['data']['status'] === 'success') {
+
+
+                $transaction = Transactions::create([
+                    'customer_id' => $user->id,
+                    'restaurant_id' => $restaurantId,
+                    'amount' => $total,
+                    'type' => 'credit',
+                    'status' => 'completed',
+                    'reference' => $data['data']['reference'],
+                ]);
+
+                $wallet = Wallet::where('user_id', $restaurantId)->first();
+
+                $wallet->balance += $total;
+                $wallet->save();
+            
+
            
             // Creates a new order with the provided items, restaurant_id and user_id
             $order = Order::create([
                 'user_id' => $request->user()->id,
                 'items' => $request->items,
                 'restaurant_id' => $restaurantId,
-                'total' => $request->total/100,
+                'total' => $total,
                 'customer_location' => $request->location,
                 'status' => 'pending',
                 'order_code' => $randomCode,
@@ -98,9 +121,8 @@ class OrderController extends Controller
                 Cart::where('user_id', $request->user()->id)->delete();
 
                 // Update the user's otp column with the random code
-                $user = $request->user();
-                $user->otp = $randomCode;
-                $user->save();
+                $order->code = $randomCode;
+                $order->save();
             }
 
         }
@@ -491,6 +513,7 @@ class OrderController extends Controller
             return response()->json([
                 'order_id' => $order->id,
                 'restaurant_name' => $restaurant->name,
+                'order_code'=> $order->code,
                 'status' => $order->status,
                 'driver_name' => $driver->name,
                 'driver_number' => $driver->phone_number,

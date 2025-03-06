@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Wallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\User;
@@ -130,6 +131,11 @@ class AuthController extends Controller
                 'bank_code'=>$request->bank_code,
                 'subaccount_code'=>$data['data']['subaccount_code'],
 
+            ]);
+
+            $wallet = Wallet::create([
+                'user_id' => $restaurant->id,
+                'balance' => 0
             ]);
 
 

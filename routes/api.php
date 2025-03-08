@@ -14,13 +14,14 @@ Route::get('/test', function () {
     ]);
 });
 
-Route::namespace('App\Http\Controllers\User')->group(function () {
+Route::
+        namespace('App\Http\Controllers\User')->group(function () {
 
             Route::post('/register', 'AuthController@register');
             Route::post('/login', 'AuthController@login');
             Route::post('/verify-user', 'AuthController@verifyUser');
             Route::post('/get-otp', 'AuthController@getOtp');
-            Route::get('locations','ProfileController@getLocations');
+            Route::get('locations', 'ProfileController@getLocations');
 
             Route::get('/categories', 'RestaurantController@categories');
             Route::get('/restaurant-list', 'RestaurantController@restaurantList');
@@ -56,15 +57,16 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
                 Route::get('/dashboard', 'ProfileController@myDashboard');
                 Route::post('/update-profile-picture', 'ProfileController@updateProfilePicture');
                 Route::post('/edit-profile', 'ProfileController@editProfile'); // Added edit profile route
-
+                Route::post('/change-password', 'AuthController@changePassword'); // Added change password route
+        
 
                 // Payment routes
                 Route::get('/bank-list', 'PaymentController@bankList');
                 Route::post('/resolve-bank', 'PaymentController@resolveBank'); // Added resolve bank
-
+        
 
 
             });
-           
 
-});
+
+        });

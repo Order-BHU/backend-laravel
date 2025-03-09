@@ -63,7 +63,7 @@ Route::
                 // Payment routes
                 Route::get('/bank-list', 'PaymentController@bankList');
                 Route::post('/resolve-bank', 'PaymentController@resolveBank'); // Added resolve bank
-        
+                Route::get('/transaction-list', 'PaymentController@transactionList');
 
 
             });

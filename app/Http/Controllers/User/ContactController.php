@@ -32,6 +32,7 @@ class ContactController extends Controller
         // Send email
         $details = [
             'name' => $user->name,
+            'email' => $user->email,
             'created_at' => $contact->created_at,
             'subject' => $request->subject,
             'message' => $request->message

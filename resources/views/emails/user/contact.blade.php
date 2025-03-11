@@ -86,9 +86,7 @@
 <body>
     <div class="container">
         <!-- Header with logo -->
-        <div class="header">
-            <!-- <img src="{{ $message->embed(public_path('images/logo.png')) }}" alt="{{ config('app.name') }}" /> -->
-        </div>
+       
 
         <!-- Main content -->
         <div class="content">

@@ -9,6 +9,7 @@
         "php": "^8.2",
         "laravel/framework": "11.44.1",
         "laravel/sanctum": "*",
+        "laravel/socialite": "^5.18",
         "laravel/tinker": "^2.9"
     },
     "require-dev": {

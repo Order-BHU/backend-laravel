@@ -58,7 +58,9 @@ Route::
                 Route::post('/update-profile-picture', 'ProfileController@updateProfilePicture');
                 Route::post('/edit-profile', 'ProfileController@editProfile'); // Added edit profile route
                 Route::post('/change-password', 'AuthController@changePassword'); // Added change password route
-        
+                Route::get('auth/google', 'AuthController@redirectToGoogle');
+                Route::get('auth/google/callback', 'AuthController@handleGoogleCallback');
+
 
                 // Payment routes
                 Route::get('/bank-list', 'PaymentController@bankList');

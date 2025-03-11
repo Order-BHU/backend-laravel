@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Http;
+use Laravel\Socialite\Facades\Socialite;
+use Exception;
 
 class AuthController extends Controller
 {
@@ -409,5 +411,52 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Password changed successfully'
         ], 200);
+    }
+
+    public function redirectToGoogle()
+    {
+        return Socialite::driver('google')->stateless()->redirect();
+    }
+
+    public function handleGoogleCallback()
+    {
+        try {
+            $user = Socialite::driver('google')->stateless()->user();
+
+            $findUser = User::where('google_id', $user->id)->first();
+
+            if ($findUser) {
+                $token = $findUser->createToken('auth_token')->plainTextToken;
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Login successful',
+                    'token' => $token,
+                    'user' => $findUser
+                ]);
+            } else {
+                $newUser = User::create([
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'google_id' => $user->id,
+                    'password' => encrypt('123456dummy')
+                ]);
+
+                $token = $newUser->createToken('auth_token')->plainTextToken;
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'User created successfully',
+                    'token' => $token,
+                    'user' => $newUser
+                ]);
+            }
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

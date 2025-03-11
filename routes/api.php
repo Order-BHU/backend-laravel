@@ -68,6 +68,7 @@ Route::
                 // Contact routes
                 Route::post('/contact', 'ContactController@submitContact');
                 Route::post('{contactId}/update-contact-status', 'ContactController@updateStatus');
+                Route::get('/contacts', 'ContactController@getContactList');
 
             });
 

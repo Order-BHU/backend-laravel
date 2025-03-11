@@ -65,6 +65,9 @@ Route::
                 Route::post('/resolve-bank', 'PaymentController@resolveBank'); // Added resolve bank
                 Route::get('/transaction-list', 'PaymentController@transactionList');
 
+                // Contact routes
+                Route::post('/contact', 'ContactController@submitContact');
+                Route::post('{contactId}/update-contact-status', 'ContactController@updateStatus');
 
             });
 

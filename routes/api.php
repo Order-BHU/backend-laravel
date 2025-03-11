@@ -14,8 +14,7 @@ Route::get('/test', function () {
     ]);
 });
 
-Route::
-        namespace('App\Http\Controllers\User')->group(function () {
+Route::namespace('App\Http\Controllers\User')->group(function () {
 
             Route::post('/register', 'AuthController@register');
             Route::post('/login', 'AuthController@login');

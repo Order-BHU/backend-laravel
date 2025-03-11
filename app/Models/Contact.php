@@ -17,4 +17,6 @@ class Contact extends Model
         'message',
         'status'
     ];
+
+    protected $table = 'contact';
 }

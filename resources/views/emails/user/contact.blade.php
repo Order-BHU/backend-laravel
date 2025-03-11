@@ -110,9 +110,7 @@
             <p>We typically respond within 24-48 business hours. If your matter is urgent, please don't hesitate to call
                 us directly at <span class="text-highlight">(234) 9032497799</span>.</p>
 
-            <div class="text-center">
-                <a href="{{ route('dashboard') }}" class="btn">Go to Your Dashboard</a>
-            </div>
+           
 
             <p>Thank you for your patience,<br>
                 The {{ config('app.name') }} Team</p>
@@ -122,9 +120,9 @@
         <div class="footer">
             <p>&copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.</p>
             <p>
-                <a href="{{ route('privacy') }}" style="color: #4F46E5; text-decoration: none;">Privacy Policy</a> |
-                <a href="{{ route('terms') }}" style="color: #4F46E5; text-decoration: none;">Terms of Service</a> |
-                <a href="{{ route('unsubscribe', ['email' => $contact->email]) }}"
+                <a href=" " style="color: #4F46E5; text-decoration: none;">Privacy Policy</a> |
+                <a href="   " style="color: #4F46E5; text-decoration: none;">Terms of Service</a> |
+                <a href=""
                     style="color: #4F46E5; text-decoration: none;">Unsubscribe</a>
             </p>
             <p style="font-size: 12px; color: #999999;">

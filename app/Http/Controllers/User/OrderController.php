@@ -350,7 +350,7 @@ class OrderController extends Controller
                         continue;
                     }
 
-                    $orderArray[] = [
+                    $orderArray = [
                         'order_id' => $order->id,
                         'restaurant_name' => $restaurant->name,
                         'user_name' => $user->name,

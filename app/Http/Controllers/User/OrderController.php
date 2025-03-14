@@ -305,6 +305,7 @@ class OrderController extends Controller
                 ], 500);
             }
         } elseif ($request->user()->account_type == 'driver') {
+
             if ($orderType == 'ready') {
                 $orders = Order::where('driver_id', $request->user()->id)
                     ->where('status', 'ready')->get();
@@ -335,7 +336,38 @@ class OrderController extends Controller
                     'orders' => $ordersArray,
                 ], 200);
 
-            } elseif ($orderType == 'completed' || $orderType == 'history') {
+            } 
+            elseif($orderType == 'delivering'){
+            $orders = Order::where('driver_id', $request->user()->id)
+                    ->where('status', 'delivering')->get();
+
+                $ordersArray = [];
+                foreach ($orders as $order) {
+                    $restaurant = Restaurant::where('id', $order->restaurant_id)->first();
+                    $user = User::where('id', $order->user_id)->first();
+
+                    if (!$restaurant || !$user) {
+                        continue;
+                    }
+
+                    $orderArray[] = [
+                        'order_id' => $order->id,
+                        'restaurant_name' => $restaurant->name,
+                        'user_name' => $user->name,
+                        'user_phoneNumber' => $user->phone_number,
+                        'phone_number_type' => $user->phone_number_type,
+                        'location' => $order->customer_location,
+                        'items' => $order->items,
+                        'total' => $order->total,
+                        'order_date' => $order->order_date
+                    ];
+                    array_push($ordersArray, $orderArray);
+                }
+                return response()->json([
+                    'orders' => $ordersArray,
+                ], 200);
+            
+            }elseif ($orderType == 'completed' || $orderType == 'history') {
                 $orders = Order::where('driver_id', $request->user()->id)
                     ->where('status', 'completed')->get();
 

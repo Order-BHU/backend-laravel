@@ -70,6 +70,9 @@ class ProfileController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->get(['amount', 'type', 'status', 'reference', 'created_at']);
 
+                $currentOrder = Order::where('user_id', $user->id)
+                    ->where('status', '!=', 'completed')
+                    ->first();
 
             return response()->json(array_merge($baseResponse, [
                 'completed_orders' => $orderHistory,

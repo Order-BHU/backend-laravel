@@ -110,7 +110,7 @@ class OrderController extends Controller
                 'total' => $total,
                 'customer_location' => $request->location,
                 'status' => 'pending',
-                'order_code' => $randomCode,
+                'code' => $randomCode,
             ]);
 
            
@@ -525,12 +525,12 @@ class OrderController extends Controller
     }
 
 
-    public function trackOrder($orderId)
+    public function trackOrder()
     {
 
-        $order = Order::where('id', $orderId)->where('user_id', auth()->user()->id)->first();
+        $order = Order::where('user_id', auth()->user()->id)->where('status', '!=', 'completed')->first();
 
-        if (!$order || $order->status == "completed") {
+        if (!$order) {
             return response()->json([
                 'message' => 'No Active Order'
             ], 200);

@@ -17,6 +17,7 @@ class Order extends Model
             'total',
             'status',
             'customer_location',
+            'code'
         
     
     ];

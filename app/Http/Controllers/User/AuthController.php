@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Http;
 use Laravel\Socialite\Facades\Socialite;
-use Hash;
+use Illuminate\Support\Facades\Hash;
 use Exception;
 
 class AuthController extends Controller

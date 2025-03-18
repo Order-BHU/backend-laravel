@@ -491,7 +491,7 @@ class OrderController extends Controller
                     'code' => 'required'
                 ]);
 
-                $order = Order::where('id', $orderId)->where('status', 'ready')->first();
+                $order = Order::where('id', $orderId)->first();
 
                 if (!$order) {
                     return response()->json([

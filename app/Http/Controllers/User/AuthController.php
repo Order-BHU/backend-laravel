@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Http;
 use Laravel\Socialite\Facades\Socialite;
+use Hash;
 use Exception;
 
 class AuthController extends Controller
@@ -397,8 +398,9 @@ class AuthController extends Controller
 
         $user = $request->user();
 
+
         // Check if current password matches
-        if (!Auth::attempt(['email' => $user->email, 'password' => $request->current_password])) {
+        if (!Hash::check($request->current_password, $user->password)) {
             return response()->json([
                 'message' => 'Current password is incorrect'
             ], 400);

@@ -499,16 +499,10 @@ class OrderController extends Controller
                     ], 404);
                 }
 
-                $customer = User::where('id', $order->user_id)->first();
-
-                if (!$customer) {
-                    return response()->json([
-                        'message' => 'Customer not found'
-                    ], 404);
-                }
+             
 
                 // Check if the code in the request matches the one saved in the database
-                if ($request->code == $customer->otp) {
+                if ($request->code == $order->code) {
                     $order->status = $status;
                     $order->save();
 

@@ -543,6 +543,7 @@ class OrderController extends Controller
             $driver = User::where('id', $order->driver_id)->first();
 
             return response()->json([
+                'total' => $order->total,
                 'order_id' => $order->id,
                 'restaurant_name' => $restaurant->name,
                 'order_code'=> $order->code,
@@ -554,6 +555,7 @@ class OrderController extends Controller
             ], 200);
         } else {
             return response()->json([
+                'total' => $order->total,
                 'order_id' => $order->id,
                 'restaurant_name' => $restaurant->name,
                 'status' => $order->status,

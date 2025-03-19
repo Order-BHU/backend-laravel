@@ -19,13 +19,11 @@ class Restaurant extends Model
         'subaccount_code'
     ];
 
-   
-
-
-
-    // public function order()
-    // {
-    //     return $this->hasMany(Order::class);
-    // }
-
+    /**
+     * Get the orders for the restaurant.
+     */
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'restaurant_id');
+    }
 }

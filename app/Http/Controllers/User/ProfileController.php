@@ -127,11 +127,23 @@ class ProfileController extends Controller
             $restaurantMetrics = Restaurant::with([
                 'orders' => function ($query) {
                     $query->select('restaurant_id')
-                        ->selectRaw('COUNT(*) as total_orders')
-                        ->selectRaw('SUM(total) as total_revenue')
+                        ->selectRaw('COUNT(DISTINCT id) as total_orders')
+                        ->selectRaw('COALESCE(SUM(total), 0) as total_revenue')
+                        ->where('status', 'completed')
                         ->groupBy('restaurant_id');
                 }
-            ])->get();
+            ])
+                ->withCount([
+                    'orders as pending_count' => function ($query) {
+                        $query->where('status', 'pending');
+                    }
+                ])
+                ->withCount([
+                    'orders as completed_count' => function ($query) {
+                        $query->where('status', 'completed');
+                    }
+                ])
+                ->get();
 
             // Active user sessions
             $activeSessions = User::whereNotNull('remember_token')
@@ -169,10 +181,14 @@ class ProfileController extends Controller
                     return [
                         'id' => $restaurant->id,
                         'name' => $restaurant->name,
-                        'total_orders' => $restaurant->orders->first()->total_orders ?? 0,
+                        'total_orders' => $restaurant->completed_count,
+                        'pending_orders' => $restaurant->pending_count,
                         'total_revenue' => $restaurant->orders->first()->total_revenue ?? 0,
                         'wallet_balance' => Wallet::where('user_id', $restaurant->id)
-                            ->value('balance') ?? 0
+                            ->value('balance') ?? 0,
+                        'average_order_value' => $restaurant->completed_count > 0
+                            ? ($restaurant->orders->first()->total_revenue / $restaurant->completed_count)
+                            : 0
                     ];
                 }),
 

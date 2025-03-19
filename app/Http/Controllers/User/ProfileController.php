@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\User\AuthController;
 use App\Models\Order;
+use App\Models\User;
 use App\Models\Wallet;
 use App\Models\Transactions;
 
@@ -37,7 +38,7 @@ class ProfileController extends Controller
                 ->where('status', 'accepted')
                 ->count();
 
-   
+
             $transactions = Transactions::where('restaurant_id', $restaurant->id)
                 ->orderBy('created_at', 'desc')
                 ->get(['amount', 'type', 'status', 'reference', 'created_at']);
@@ -47,7 +48,7 @@ class ProfileController extends Controller
                 'restaurant_details' => [
                     'name' => $restaurant->name,
                     'logo' => $user->profile_picture_url,
-                 
+
                 ],
                 'wallet_balance' => $wallet->balance,
                 'statistics' => [
@@ -70,10 +71,10 @@ class ProfileController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->get(['amount', 'type', 'status', 'reference', 'created_at']);
 
-             
+
             return response()->json(array_merge($baseResponse, [
                 'completed_orders' => $orderHistory,
-                'transactions'=> $transactions
+                'transactions' => $transactions
             ]));
         }
 
@@ -96,6 +97,93 @@ class ProfileController extends Controller
             ]));
         }
 
+        if ($user->account_type == 'admin') {
+            // Basic statistics
+            $totalOrders = Order::count();
+            $totalRestaurants = Restaurant::count();
+            $totalCustomers = User::where('account_type', 'customer')->count();
+            $totalDrivers = User::where('account_type', 'driver')->count();
+
+            // Enhanced order statistics
+            $pendingOrders = Order::where('status', 'pending')->count();
+            $acceptedOrders = Order::where('status', 'accepted')->count();
+            $deliveringOrders = Order::where('status', 'delivering')->count();
+            $completedOrders = Order::where('status', 'completed')->count();
+
+            // User activity metrics
+            $activeDrivers = User::where('account_type', 'driver')
+                ->where('status', 'online')
+                ->count();
+            $inactiveDrivers = User::where('account_type', 'driver')
+                ->where('status', 'offline')
+                ->count();
+
+            // Recent transactions
+            $recentTransactions = Transactions::orderBy('created_at', 'desc')
+                ->take(10)
+                ->get();
+
+            // Restaurant performance metrics
+            $restaurantMetrics = Restaurant::with([
+                'orders' => function ($query) {
+                    $query->select('restaurant_id')
+                        ->selectRaw('COUNT(*) as total_orders')
+                        ->selectRaw('SUM(total) as total_revenue')
+                        ->groupBy('restaurant_id');
+                }
+            ])->get();
+
+            // Active user sessions
+            $activeSessions = User::whereNotNull('remember_token')
+                ->where('updated_at', '>=', now()->subHours(24))
+                ->count();
+
+            // System overview
+            return response()->json(array_merge($baseResponse, [
+                // User statistics
+                'total_orders' => $totalOrders,
+                'total_restaurants' => $totalRestaurants,
+                'total_customers' => $totalCustomers,
+                'total_drivers' => $totalDrivers,
+                'active_drivers' => $activeDrivers,
+                'inactive_drivers' => $inactiveDrivers,
+                'active_sessions' => $activeSessions,
+
+                // Order statistics
+                'order_metrics' => [
+                    'pending' => $pendingOrders,
+                    'accepted' => $acceptedOrders,
+                    'delivering' => $deliveringOrders,
+                    'completed' => $completedOrders
+                ],
+
+                // Financial overview
+                'transactions' => [
+                    'recent' => $recentTransactions,
+                    'total_revenue' => Transactions::where('status', 'completed')
+                        ->sum('amount')
+                ],
+
+                // Restaurant performance
+                'restaurant_metrics' => $restaurantMetrics->map(function ($restaurant) {
+                    return [
+                        'id' => $restaurant->id,
+                        'name' => $restaurant->name,
+                        'total_orders' => $restaurant->orders->first()->total_orders ?? 0,
+                        'total_revenue' => $restaurant->orders->first()->total_revenue ?? 0,
+                        'wallet_balance' => Wallet::where('user_id', $restaurant->id)
+                            ->value('balance') ?? 0
+                    ];
+                }),
+
+                // System health
+                'system_status' => [
+                    'api_version' => '1.0',
+                    'last_backup' => now(),
+                    'server_time' => now()
+                ]
+            ]));
+        }
         return response()->json($baseResponse);
     }
 
@@ -191,5 +279,42 @@ class ProfileController extends Controller
             'message' => "Profile Updated successfully",
             'user' => $user
         ]);
+    }
+
+    /**
+     * Get detailed statistics for admin dashboard
+     */
+    private function getAdminStatistics()
+    {
+        return [
+            'orders' => [
+                'today' => Order::whereDate('created_at', today())->count(),
+                'week' => Order::whereDate('created_at', '>=', now()->subWeek())->count(),
+                'month' => Order::whereDate('created_at', '>=', now()->subMonth())->count()
+            ],
+            'revenue' => [
+                'today' => Transactions::whereDate('created_at', today())
+                    ->where('status', 'completed')
+                    ->sum('amount'),
+                'week' => Transactions::whereDate('created_at', '>=', now()->subWeek())
+                    ->where('status', 'completed')
+                    ->sum('amount'),
+                'month' => Transactions::whereDate('created_at', '>=', now()->subMonth())
+                    ->where('status', 'completed')
+                    ->sum('amount')
+            ]
+        ];
+    }
+
+    /**
+     * Get user activity metrics
+     */
+    private function getUserActivityMetrics()
+    {
+        return [
+            'new_users' => User::whereDate('created_at', '>=', now()->subDays(30))->count(),
+            'active_users' => User::whereDate('updated_at', '>=', now()->subDays(7))->count(),
+            'inactive_users' => User::whereDate('updated_at', '<', now()->subDays(30))->count()
+        ];
     }
 }

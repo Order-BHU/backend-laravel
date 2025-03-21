@@ -40,7 +40,7 @@ class ContactController extends Controller
 
 
         Mail::send('emails.user.contact', $details, function ($message) use ($details) {
-            $message->from(config("mail.from.address"), 'Order Support');
+            $message->from(config("mail.from.address", "mainaccount@bhuorder.com.ng"), 'Order Support');
             $message->to($details['email'], "Support Team");
             $message->subject("New Contact Form Submission: " . $details['subject']);
         });

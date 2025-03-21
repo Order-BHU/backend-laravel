@@ -152,7 +152,7 @@ class AuthController extends Controller
 
 
             Mail::send('emails.user.otp', $details, function ($message) use ($email) {
-                $message->from(config("mail.from.address"), 'Order');
+                $message->from(config("mail.from.address", "mainaccount@bhuorder.com.ng"), 'Order');
                 $message->to($email, "Order");
                 $message->subject("OTP from bhuorder");
             });
@@ -200,7 +200,7 @@ class AuthController extends Controller
 
 
             Mail::send('emails.user.otp', $details, function ($message) use ($email) {
-                $message->from(config("mail.from.address"), 'Order');
+                $message->from(config("mail.from.address", "mainaccount@bhuorder.com.ng"), 'Order');
                 $message->to($email, "Order");
                 $message->subject("OTP from bhuorder");
             });
@@ -269,7 +269,7 @@ class AuthController extends Controller
 
 
         Mail::send('emails.user.otp', $details, function ($message) use ($email) {
-            $message->from(config("mail.from.address"), 'Order');
+            $message->from(config("mail.from.address", "mainaccount@bhuorder.com.ng"), 'Order');
             $message->to($email);
             $message->subject("OTP from bhuorder");
         });

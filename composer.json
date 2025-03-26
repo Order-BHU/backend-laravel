@@ -10,7 +10,8 @@
         "laravel/framework": "11.44.1",
         "laravel/sanctum": "*",
         "laravel/socialite": "^5.18",
-        "laravel/tinker": "^2.9"
+        "laravel/tinker": "^2.9",
+        "sendinblue/api-v3-sdk": "^8.4"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

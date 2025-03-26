@@ -5,11 +5,12 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Contact;
+use App\Services\BrevoMailer;
 use Illuminate\Support\Facades\Mail;
 
 class ContactController extends Controller
 {
-    public function submitContact(Request $request)
+    public function submitContact(Request $request, BrevoMailer $brevo)
     {
         $request->validate([
             'subject' => 'required|string|max:255',
@@ -38,12 +39,21 @@ class ContactController extends Controller
             'message' => $request->message
         ];
 
+        $brevo->sendMail(
+            'vigo4real2016@gmail.com',
+            'Daniel Virgo',
+            'Hello from Laravel + Brevo!',
+            '<p>This is a test email using Brevo API.</p>',
+            'bhuorder@gmail.com',
+            'Order'
+        );
 
-        Mail::send('emails.user.contact', $details, function ($message) use ($details) {
-            $message->from(config("mail.from.address", "mainaccount@bhuorder.com.ng"), 'Order Support');
-            $message->to($details['email'], "Support Team");
-            $message->subject("New Contact Form Submission: " . $details['subject']);
-        });
+
+        // Mail::send('emails.user.contact', $details, function ($message) use ($details) {
+        //     $message->from(config("mail.from.address", "mainaccount@bhuorder.com.ng"), 'Order Support');
+        //     $message->to($details['email'], "Support Team");
+        //     $message->subject("New Contact Form Submission: " . $details['subject']);
+        // });
 
 
         return response()->json([

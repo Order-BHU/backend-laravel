@@ -102,7 +102,6 @@
             <ul>
                 <li><strong>Name:</strong> {{ $name }}</li>
                 <li><strong>Subject:</strong> {{ $subject }}</li>
-                <!-- <li><strong>Submitted on:</strong> {{ $created_at->format('F j, Y \a\t g:i A') }}</li> -->
             </ul>
 
             <p>We typically respond within 24-48 business hours. If your matter is urgent, please don't hesitate to call

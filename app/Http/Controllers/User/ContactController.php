@@ -27,26 +27,27 @@ class ContactController extends Controller
             'name' => $user->name,
             'email' => $user->email,
             'subject' => $request->subject,
-            'message' => $request->message,
+            'message' => $request->message
         ]);
 
-        // Send email
         $details = [
             'name' => $user->name,
             'email' => $user->email,
-            'created_at' => $contact->created_at,
             'subject' => $request->subject,
             'message' => $request->message
         ];
 
+        $htmlContent = view('emails.user.contact', $details)->render();
+
         $brevo->sendMail(
-            'vigo4real2016@gmail.com',
-            'Daniel Virgo',
-            'Hello from Laravel + Brevo!',
-            '<p>This is a test email using Brevo API.</p>',
-            'bhuorder@gmail.com',
-            'Order'
+            $user->email,          
+            'Support Team',             
+            $request->subject,                  
+            $htmlContent,              
+            config("mail.from.address", "support@bhuorder.com"),  // from email
+            'Order Support'             // from name
         );
+     
 
 
         // Mail::send('emails.user.contact', $details, function ($message) use ($details) {

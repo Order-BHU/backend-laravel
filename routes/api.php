@@ -22,6 +22,10 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
             Route::post('/get-otp', 'AuthController@getOtp');
             Route::get('locations', 'ProfileController@getLocations');
 
+            Route::get('auth/google', 'AuthController@redirectToGoogle');
+            Route::get('auth/google/callback', 'AuthController@handleGoogleCallback');
+
+
             Route::get('/categories', 'RestaurantController@categories');
             Route::get('/restaurant-list', 'RestaurantController@restaurantList');
             Route::get('{restaurantId}/menu-list', 'RestaurantController@menuList');
@@ -57,9 +61,7 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
                 Route::post('/update-profile-picture', 'ProfileController@updateProfilePicture');
                 Route::post('/edit-profile', 'ProfileController@editProfile'); // Added edit profile route
                 Route::post('/change-password', 'AuthController@changePassword'); // Added change password route
-                Route::get('auth/google', 'AuthController@redirectToGoogle');
-                Route::get('auth/google/callback', 'AuthController@handleGoogleCallback');
-
+          
 
                 // Payment routes
                 Route::get('/bank-list', 'PaymentController@bankList');

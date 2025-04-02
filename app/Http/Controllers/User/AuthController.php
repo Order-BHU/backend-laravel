@@ -15,10 +15,19 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Http;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Hash;
+use App\Services\BrevoMailer;
 use Exception;
+
+
+
 
 class AuthController extends Controller
 {
+    /**
+     * @var  BrevoMailer $brevo - BrevoMailer instance
+     */
+    protected $brevo;
+
     public function register(Request $request)
     {
 
@@ -257,15 +266,26 @@ class AuthController extends Controller
         $user->otp = $otp;
         $user->save();
 
-        $details = array(
+        $details = [
             "name" => $request->name,
             "otp" => $otp
 
-        );
+        ];
+
+        $htmlContent = view('emails.user.otp', $details)->render();
 
 
 
         $email = $request->email;
+
+          $this->brevo->sendMail(
+            $email,          
+            'Support Team',             
+            'OTP from bhuorder',                  
+            $htmlContent,              
+            config("mail.from.address", "support@bhuorder.com"),  // from email
+            'Onboarding Team'             // from name
+        );
 
 
         Mail::send('emails.user.otp', $details, function ($message) use ($email) {

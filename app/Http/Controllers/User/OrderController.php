@@ -533,6 +533,8 @@ class OrderController extends Controller
        
 
         $restaurant = Restaurant::where('id', $order->restaurant_id)->first();
+        $restaurantOwner = User::where('id', $restaurant->user_id)->first();
+
         if (!is_null($order->driver_id)) {
             $driver = User::where('id', $order->driver_id)->first();
 
@@ -540,6 +542,7 @@ class OrderController extends Controller
                 'total' => $order->total,
                 'order_id' => $order->id,
                 'restaurant_name' => $restaurant->name,
+                'restaurant_email' => $restaurantOwner->email,
                 'order_code'=> $order->code,
                 'status' => $order->status,
                 'driver_name' => $driver->name,
@@ -552,6 +555,7 @@ class OrderController extends Controller
                 'total' => $order->total,
                 'order_id' => $order->id,
                 'restaurant_name' => $restaurant->name,
+                'restaurant_email' => $restaurantOwner->email,
                 'status' => $order->status,
                 'items' => $order->items
             ], 200);

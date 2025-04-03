@@ -445,7 +445,7 @@ class AuthController extends Controller
         try {
             $user = Socialite::driver('google')->stateless()->user();
 
-            $findUser = User::where('google_id', $user->id)->first();
+            $findUser = User::where('email', $user->email)->first();
 
             if ($findUser) {
                 $token = $findUser->createToken('auth_token')->plainTextToken;
@@ -462,7 +462,6 @@ class AuthController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                     'acccount_type' => 'customer',
-                    'google_id' => $user->id,
                     'password' => encrypt('123456dummy')
                 ]);
 

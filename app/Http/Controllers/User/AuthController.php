@@ -453,6 +453,7 @@ class AuthController extends Controller
                 return response()->json([
                     'status' => 'success',
                     'message' => 'Login successful',
+                    'profile_image' =>  $findUser->profile_picture_url,
                     'token' => $token,
                     'user' => $findUser
                 ]);
@@ -460,6 +461,7 @@ class AuthController extends Controller
                 $newUser = User::create([
                     'name' => $user->name,
                     'email' => $user->email,
+                    'acccount_type' => 'customer',
                     'google_id' => $user->id,
                     'password' => encrypt('123456dummy')
                 ]);
@@ -469,6 +471,8 @@ class AuthController extends Controller
                 return response()->json([
                     'status' => 'success',
                     'message' => 'User created successfully',
+                    'profile_image' => $newUser->profile_picture_url,
+                    'account_type' => $newUser->account_type,
                     'token' => $token,
                     'user' => $newUser
                 ]);

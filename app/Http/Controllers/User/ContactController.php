@@ -44,7 +44,7 @@ class ContactController extends Controller
             'Support Team',             
             $request->subject,                  
             $htmlContent,              
-            config("mail.from.address", "support@bhuorder.com"),  // from email
+            config("mail.from.address", "support@bhuorder.com.ng"),  // from email
             'Order Support'             // from name
         );
      

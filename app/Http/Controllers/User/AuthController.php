@@ -461,6 +461,7 @@ class AuthController extends Controller
                 $newUser = User::create([
                     'name' => $user->name,
                     'email' => $user->email,
+                    'profile_picture_url' => $user->avatar,
                     'acccount_type' => 'customer',
                     'password' => encrypt('123456dummy')
                 ]);

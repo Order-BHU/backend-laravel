@@ -59,9 +59,12 @@ class RestaurantController extends Controller
                 return $category;
             });
 
+        $restaurant = Restaurant::where('id', $restaurantId)->first();
+
 
 
         return response()->json([
+            'restaurant' => $restaurant,
             'menu' => $categories,
         ], 200);
     }

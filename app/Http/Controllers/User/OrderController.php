@@ -42,7 +42,7 @@ class OrderController extends Controller
                     'amount' => $request->total * 100, // Amount in kobo
                     // 'subaccount' => $restaurant->subaccount_code, 2 lines are for split payments
                     // 'transaction_charge' => 250 * 100,  Charge amount in kobo
-                    'callback_url'=> 'https://bhuorder.netlify.app/menu/' . $request->callback_id
+                    'callback_url'=> 'https://bhuorder.com/menu/' . $request->callback_id
 
                 ]);
 

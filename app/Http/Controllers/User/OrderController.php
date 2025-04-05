@@ -20,6 +20,14 @@ class OrderController extends Controller
     public function initializeCheckout(Request $request, $restaurantId){
 
 
+        $order = Order::where('user_id', auth()->user()->id)->where('status', '!=', 'completed')->first();
+
+        if (!$order) {
+            return response()->json([
+                'message' => 'No Active Order'
+            ], 200);
+        }
+
         $request->validate([
             'total' => 'required|numeric',
             'callback_id' => 'required'

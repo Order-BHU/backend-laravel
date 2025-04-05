@@ -22,10 +22,10 @@ class OrderController extends Controller
 
         $order = Order::where('user_id', auth()->user()->id)->where('status', '!=', 'completed')->first();
 
-        if (!$order) {
+        if ($order) {
             return response()->json([
-                'message' => 'No Active Order'
-            ], 200);
+                'message' => 'You have a pending order, complete your order to order again'
+            ])->setStatusCode(400);
         }
 
         $request->validate([

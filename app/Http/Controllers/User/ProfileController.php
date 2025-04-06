@@ -46,6 +46,8 @@ class ProfileController extends Controller
 
             return response()->json(array_merge($baseResponse, [
                 'restaurant_details' => [
+                    'id' => $restaurant->id,
+                    'email' => $restaurant->email,
                     'name' => $restaurant->name,
                     'logo' => $user->profile_picture_url,
 

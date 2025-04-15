@@ -50,13 +50,6 @@ class ContactController extends Controller
      
 
 
-        // Mail::send('emails.user.contact', $details, function ($message) use ($details) {
-        //     $message->from(config("mail.from.address", "mainaccount@bhuorder.com.ng"), 'Order Support');
-        //     $message->to($details['email'], "Support Team");
-        //     $message->subject("New Contact Form Submission: " . $details['subject']);
-        // });
-
-
         return response()->json([
             'message' => 'Your message has been sent successfully',
             'contact_id' => $contact->id

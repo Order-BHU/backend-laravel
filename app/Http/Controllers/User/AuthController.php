@@ -28,12 +28,10 @@ class AuthController extends Controller
      */
     protected $brevo;
 
-    public function register(Request $request)
+    public function register(Request $request, BrevoMailer $brevo)
     {
 
-        // Mail::raw('Test email from Laravel', function ($message) {
-        //     $message->to('danieloluwasegun1000@gmail.com')->subject('Test Email');
-        // });
+        
 
         if ($request->account_type == 'customer') {
 
@@ -64,27 +62,26 @@ class AuthController extends Controller
             $user->save();
 
 
-            $details = array(
+            $details = [
                 "name" => $request->name,
                 "otp" => $otp
 
+            ];
+        
+
+            $htmlContent = view('emails.user.otp', $details)->render();
+
+            $brevo->sendMail(
+                $user->email,
+                'Onboarding Team',
+                "OTP Request",
+                $htmlContent,
+                config("mail.from.address", "support@bhuorder.com.ng"),  // from email
+                'Onboarding Team'             // from name
             );
 
 
-            $email = $request->email;
-
-            Mail::send('emails.user.otp', $details, function ($message) use ($email) {
-                $message->to($email, "Order")
-                    ->subject("OTP from bhuorder");
-            });
-
-
-            // Mail::send('emails.user.otp', $details, function ($message) use ($email) {
-            //     $message->from(config("mail.from.address"), 'Order');
-            //     $message->to($email,"Order");
-            //     $message->subject("OTP from bhuorder");
-            // });
-
+      
             return response()->json([
                 'message' => 'OTP sent successfully, Check email'
             ], 200);
@@ -151,20 +148,23 @@ class AuthController extends Controller
             ]);
 
 
-            $details = array(
+             $details = [
                 "name" => $request->name,
                 "otp" => $otp
+
+            ];
+        
+
+            $htmlContent = view('emails.user.otp', $details)->render();
+
+            $brevo->sendMail(
+                $user->email,
+                'Onboarding Team',
+                "OTP Request",
+                $htmlContent,
+                config("mail.from.address", "support@bhuorder.com.ng"),  // from email
+                'Onboarding Team'             // from name
             );
-
-
-            $email = $request->email;
-
-
-            Mail::send('emails.user.otp', $details, function ($message) use ($email) {
-                $message->from(config("mail.from.address", "mainaccount@bhuorder.com.ng"), 'Order');
-                $message->to($email, "Order");
-                $message->subject("OTP from bhuorder");
-            });
 
             return response()->json([
                 'message' => 'OTP sent successfully, Check email'
@@ -194,25 +194,29 @@ class AuthController extends Controller
                 'otp' => $otp
             ]);
 
-            $user->account_type = $request->account_type;
-            $user->save();
+         $wallet = Wallet::create([
+                'user_id' => $user->id,
+                'balance' => 0
+            ]);
 
 
-            $details = array(
+             $details = [
                 "name" => $request->name,
                 "otp" => $otp
 
+            ];
+        
+
+            $htmlContent = view('emails.user.otp', $details)->render();
+
+            $brevo->sendMail(
+                $user->email,
+                'Onboarding Team',
+                "OTP Request",
+                $htmlContent,
+                config("mail.from.address", "support@bhuorder.com.ng"),  // from email
+                'Onboarding Team'             // from name
             );
-
-
-            $email = $request->email;
-
-
-            Mail::send('emails.user.otp', $details, function ($message) use ($email) {
-                $message->from(config("mail.from.address", "mainaccount@bhuorder.com.ng"), 'Order');
-                $message->to($email, "Order");
-                $message->subject("OTP from bhuorder");
-            });
 
             return response()->json([
                 'message' => 'OTP sent successfully, Check email'
@@ -288,11 +292,6 @@ class AuthController extends Controller
         );
 
 
-        Mail::send('emails.user.otp', $details, function ($message) use ($email) {
-            $message->from(config("mail.from.address", "mainaccount@bhuorder.com.ng"), 'Order');
-            $message->to($email);
-            $message->subject("OTP from bhuorder");
-        });
 
         return response()->json([
             "message" => "OTP sent successfully"

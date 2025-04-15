@@ -17,9 +17,7 @@ use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Hash;
 use App\Services\BrevoMailer;
 use Exception;
-
-
-
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -483,5 +481,86 @@ class AuthController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function forgotPassword(Request $request, BrevoMailer $brevo)
+    {
+        $request->validate([
+            'email' => 'required|string|email|max:255|exists:users',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+        
+        // Generate a random token
+        $token = Str::random(64);
+        
+        // Store the token in the password_reset_tokens table
+        DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $user->email],
+            [
+                'token' => $token,
+                'created_at' => now()
+            ]
+        );
+
+        // Generate the reset URL
+        $resetUrl = env('FRONTEND_URL', 'http://localhost:3000') . '/reset-password?token=' . $token;
+
+        $details = [
+            'name' => $user->name,
+            'resetUrl' => $resetUrl
+        ];
+
+        $htmlContent = view('emails.user.password-reset', $details)->render();
+
+        $brevo->sendMail(
+            $user->email,
+            'Support Team',
+            'Password Reset Request',
+            $htmlContent,
+            config("mail.from.address", "support@bhuorder.com.ng"),
+            'Order Support'
+        );
+
+        return response()->json([
+            'message' => 'Password reset link sent to your email'
+        ], 200);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token' => 'required|string',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $passwordReset = DB::table('password_reset_tokens')
+            ->where('token', $request->token)
+            ->first();
+
+        if (!$passwordReset) {
+            return response()->json([
+                'message' => 'Invalid or expired reset token'
+            ], 400);
+        }
+
+        // Check if token is expired (60 minutes)
+        if (now()->diffInMinutes($passwordReset->created_at) > 60) {
+            DB::table('password_reset_tokens')->where('token', $request->token)->delete();
+            return response()->json([
+                'message' => 'Reset token has expired'
+            ], 400);
+        }
+
+        $user = User::where('email', $passwordReset->email)->first();
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        // Delete the used token
+        DB::table('password_reset_tokens')->where('token', $request->token)->delete();
+
+        return response()->json([
+            'message' => 'Password has been reset successfully'
+        ], 200);
     }
 }

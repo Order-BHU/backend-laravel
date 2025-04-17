@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Models\DriverTransfers;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -17,7 +18,8 @@ use App\Models\Wallet;
 class OrderController extends Controller
 {
 
-    public function initializeCheckout(Request $request, $restaurantId){
+    public function initializeCheckout(Request $request, $restaurantId)
+    {
 
 
         $order = Order::where('user_id', auth()->user()->id)->where('status', '!=', 'completed')->first();
@@ -33,6 +35,7 @@ class OrderController extends Controller
             'callback_id' => 'required'
         ]);
         $user = $request->user();
+        $fee = 300;
         $restaurant = Restaurant::where('id', $restaurantId)->first();
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . env('PAYSTACK_SECRET_KEY'),
@@ -41,8 +44,8 @@ class OrderController extends Controller
                     'email' => $user->email,
                     'amount' => $request->total * 100, // Amount in kobo
                     // 'subaccount' => $restaurant->subaccount_code, 2 lines are for split payments
-                    // 'transaction_charge' => 250 * 100,  Charge amount in kobo
-                    'callback_url'=> 'https://bhuorder.com/menu/' . $request->callback_id
+                    // 'transaction_charge' => fee * 100,  Charge amount in kobo
+                    'callback_url' => 'https://bhuorder.com/menu/' . $request->callback_id
 
                 ]);
 
@@ -62,11 +65,11 @@ class OrderController extends Controller
             'items' => 'required|array',
             'total' => 'required|numeric',
             'location' => 'required',
-            'reference'=>'required'
+            'reference' => 'required'
         ]);
 
         // Converts the total amount to naira
-        $total = $request->total/100;
+        $total = $request->total / 100;
 
         // Generate a random 6-character alphanumeric code
         $randomCode = rand(1000, 9999);
@@ -107,39 +110,38 @@ class OrderController extends Controller
 
                 $wallet->balance += $total;
                 $wallet->save();
-            
 
-           
-            // Creates a new order with the provided items, restaurant_id and user_id
-            $order = Order::create([
-                'user_id' => $request->user()->id,
-                'items' => $request->items,
-                'restaurant_id' => $restaurantId,
-                'total' => $total,
-                'customer_location' => $request->location,
-                'status' => 'pending',
-                'code' => $randomCode,
-            ]);
 
-           
-                
 
-            if ($order) {
-                // Removes the cart items for the restaurant
-                Cart::where('user_id', $request->user()->id)->delete();
+                // Creates a new order with the provided items, restaurant_id and user_id
+                $order = Order::create([
+                    'user_id' => $request->user()->id,
+                    'items' => $request->items,
+                    'restaurant_id' => $restaurantId,
+                    'total' => $total,
+                    'customer_location' => $request->location,
+                    'status' => 'pending',
+                    'code' => $randomCode,
+                ]);
 
-                // Update the user's otp column with the random code
-                $order->code = $randomCode;
-                $order->save();
+
+
+
+                if ($order) {
+                    // Removes the cart items for the restaurant
+                    Cart::where('user_id', $request->user()->id)->delete();
+
+                    // Update the user's otp column with the random code
+                    $order->code = $randomCode;
+                    $order->save();
+                }
+
+            } else {
+                return response([
+                    'message' => 'Payment Failed',
+                    'data' => $data
+                ], 400);
             }
-
-        }
-        else{
-            return response([
-               'message' => 'Payment Failed',
-                'data' => $data
-            ], 400);
-        }
         } else {
             return response([
                 'message' => 'You have a pending order, complete your order to order again'
@@ -230,7 +232,7 @@ class OrderController extends Controller
 
                     $orderArray = [
                         'order_id' => $order->id,
-                        'status'=>$order->status,
+                        'status' => $order->status,
                         'items' => $menus,
                         'total' => $order->total,
                         'order_date' => $order->order_date
@@ -344,9 +346,8 @@ class OrderController extends Controller
                     'orders' => $ordersArray,
                 ], 200);
 
-            } 
-            elseif($orderType == 'delivering'){
-            $orders = Order::where('driver_id', $request->user()->id)
+            } elseif ($orderType == 'delivering') {
+                $orders = Order::where('driver_id', $request->user()->id)
                     ->where('status', 'delivering')->get();
 
                 $ordersArray = [];
@@ -374,8 +375,8 @@ class OrderController extends Controller
                 return response()->json([
                     'orders' => $ordersArray,
                 ], 200);
-            
-            }elseif ($orderType == 'completed' || $orderType == 'history') {
+
+            } elseif ($orderType == 'completed' || $orderType == 'history') {
                 $orders = Order::where('driver_id', $request->user()->id)
                     ->where('status', 'completed')->get();
 
@@ -439,14 +440,12 @@ class OrderController extends Controller
                     ], 404);
                 }
 
-                $order->status = $status;
-                $order->save();
 
                 // Gets all drivers
                 $drivers = User::select('id')->where('account_type', 'driver')->where('status', 'online')->get();
 
                 // Get all drivers with no orders
-                $driversWithNoOrders = array_diff($drivers->pluck('id')->toArray(), Order::pluck('driver_id')->toArray());
+                $driversWithNoOrders = array_diff($drivers->pluck('id')->toArray(), Order::pluck('driver_id')->where("status", "!=", "completed")->toArray());
 
                 // If all drivers have orders, find driver with least number of orders
                 if (empty($driversWithNoOrders)) {
@@ -458,9 +457,20 @@ class OrderController extends Controller
                         ->limit(1)
                         ->value('driver_id');
 
+                    // No Available driver
+                    if (!$availableDriver) {
+                        return response()->json([
+                            'message' => 'No availble driver at the moment',
+                            'driver_id' => $availableDriver
+                        ], 200);
+                    }
+
                 } else {
                     $availableDriver = $driversWithNoOrders[0];
                 }
+
+                $order->status = $status;
+                $order->save();
 
                 // Assign the order to the available driver
                 $order->driver_id = $availableDriver;
@@ -477,12 +487,12 @@ class OrderController extends Controller
             }
         } elseif ($request->user()->account_type == 'driver') {
 
-            if($status == 'delivering'){
+            if ($status == 'delivering') {
                 $order = Order::where('id', $orderId)->where('driver_id', $request->user()->id)->first();
 
                 if (!$order) {
                     return response()->json([
-                       'message' => 'Order not found or not assigned to this driver'
+                        'message' => 'Order not found or not assigned to this driver'
                     ], 404);
                 }
 
@@ -490,11 +500,10 @@ class OrderController extends Controller
                 $order->save();
 
                 return response()->json([
-                   'message' => 'Status updated successfully'
+                    'message' => 'Status updated successfully'
                 ], 200);
 
-            }
-            else if ($status == 'completed') {
+            } else if ($status == 'completed') {
                 $request->validate([
                     'code' => 'required'
                 ]);
@@ -507,12 +516,40 @@ class OrderController extends Controller
                     ], 404);
                 }
 
-             
+                $driver = Driver::where('user_id',$order->driver_id)->first();
+
+
 
                 // Check if the code in the request matches the one saved in the database
                 if ($request->code == $order->code) {
+
                     $order->status = $status;
                     $order->save();
+
+                    $reference = Str::uuid();
+
+                    $response = Http::withHeaders([
+                        'Authorization' => 'Bearer ' . env('PAYSTACK_SECRET_KEY'),
+                        'Content-Type' => 'application/json',
+                    ])->post(env('PAYSTACK_PAYMENT_URL') . '/transfer', [
+                                "source" => "balance",
+                                "amount" => 180,
+                                "reference" => $reference,
+                                "recipient" => $driver->recipient_code,
+                                "reason" => "Delivery Completed"
+                            ]);
+
+                    $data = $response->json();
+                    if (!$data['status']) {
+                        return response()->json(['error' => $data['message']], 400);
+                    }
+
+                    $driverTransfer = DriverTransfers::create([
+                        'user_id'=>$order->driver_id,
+                        'status'=> 'pending',
+                        'reference'=> $reference,
+                    ]);
+
 
                     return response()->json([
                         'message' => 'Status updated successfully'
@@ -538,7 +575,7 @@ class OrderController extends Controller
             ], 200);
         }
 
-       
+
 
         $restaurant = Restaurant::where('id', $order->restaurant_id)->first();
         $restaurantOwner = User::where('id', $restaurant->user_id)->first();
@@ -551,7 +588,7 @@ class OrderController extends Controller
                 'order_id' => $order->id,
                 'restaurant_name' => $restaurant->name,
                 'restaurant_email' => $restaurantOwner->email,
-                'order_code'=> $order->code,
+                'order_code' => $order->code,
                 'status' => $order->status,
                 'driver_name' => $driver->name,
                 'driver_number' => $driver->phone_number,

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Driver;
 use App\Models\Wallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -29,7 +30,7 @@ class AuthController extends Controller
     public function register(Request $request, BrevoMailer $brevo)
     {
 
-        
+
 
         if ($request->account_type == 'customer') {
 
@@ -65,7 +66,7 @@ class AuthController extends Controller
                 "otp" => $otp
 
             ];
-        
+
 
             $htmlContent = view('emails.user.otp', $details)->render();
 
@@ -79,7 +80,7 @@ class AuthController extends Controller
             );
 
 
-      
+
             return response()->json([
                 'message' => 'OTP sent successfully, Check email'
             ], 200);
@@ -140,18 +141,18 @@ class AuthController extends Controller
 
             ]);
 
-            $wallet = Wallet::create([
+            $resWallet = Wallet::create([
                 'user_id' => $restaurant->id,
                 'balance' => 0
             ]);
 
 
-             $details = [
+            $details = [
                 "name" => $request->name,
                 "otp" => $otp
 
             ];
-        
+
 
             $htmlContent = view('emails.user.otp', $details)->render();
 
@@ -192,18 +193,41 @@ class AuthController extends Controller
                 'otp' => $otp
             ]);
 
-         $wallet = Wallet::create([
+            $driWallet = Wallet::create([
                 'user_id' => $user->id,
                 'balance' => 0
             ]);
 
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . env('PAYSTACK_SECRET_KEY'),
+                'Content-Type' => 'application/json',
+            ])->post(env('PAYSTACK_PAYMENT_URL') . '/transferrecipient', [
+                        "type" => "nuban",
+                        "name" => $user->name,
+                        "account_number" => $request->acoount_no,
+                        "bank_code" => $request->bank_code
+                    ]);
 
-             $details = [
+          
+
+
+            $data = $response->json();
+            if (!$data['status']) {
+                return response()->json(['error' => $data['message']], 400);
+            }
+
+            $driver = Driver::create([
+                'user_id'=> $user->id,
+                'recipient_code'=> $data['data']['recipient_code']
+            ]);
+
+
+
+            $details = [
                 "name" => $request->name,
                 "otp" => $otp
-
             ];
-        
+
 
             $htmlContent = view('emails.user.otp', $details)->render();
 
@@ -280,11 +304,11 @@ class AuthController extends Controller
 
         $email = $request->email;
 
-          $this->brevo->sendMail(
-            $email,          
-            'Support Team',             
-            'OTP from bhuorder',                  
-            $htmlContent,              
+        $this->brevo->sendMail(
+            $email,
+            'Support Team',
+            'OTP from bhuorder',
+            $htmlContent,
             config("mail.from.address", "support@bhuorder.com"),  // from email
             'Onboarding Team'             // from name
         );
@@ -450,7 +474,7 @@ class AuthController extends Controller
                 return response()->json([
                     'status' => 'success',
                     'message' => 'Login successful',
-                    'profile_image' =>  $findUser->profile_picture_url,
+                    'profile_image' => $findUser->profile_picture_url,
                     'token' => $token,
                     'user' => $findUser
                 ]);
@@ -490,10 +514,10 @@ class AuthController extends Controller
         ]);
 
         $user = User::where('email', $request->email)->first();
-        
+
         // Generate a random token
         $token = Str::random(64);
-        
+
         // Store the token in the password_reset_tokens table
         DB::table('password_reset_tokens')->updateOrInsert(
             ['email' => $user->email],
@@ -504,7 +528,7 @@ class AuthController extends Controller
         );
 
         // Generate the reset URL
-        $resetUrl = env('FRONTEND_URL', 'http://localhost:3000') . '/reset-password?token=' . $token;
+        $resetUrl = env('FRONTEND_URL', 'https://bhuorder.com') . '/reset-password?token=' . $token;
 
         $details = [
             'name' => $user->name,

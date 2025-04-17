@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Restaurant;
 use App\Models\Transactions;
+use App\Models\DriverTransfers;
 
 
 class PaymentController extends Controller
@@ -59,5 +60,51 @@ class PaymentController extends Controller
         return response()->json([
             'transactions' => $transactions
         ]);
+    }
+
+    public function transferWebhook(Request $request)
+    {
+        // Verify the webhook signature
+        $signature = $request->header('x-paystack-signature');
+        $payload = $request->getContent();
+        
+        // Verify the signature
+        $hash = hash_hmac('sha512', $payload, env('PAYSTACK_SECRET_KEY'));
+        
+        if ($hash !== $signature) {
+            return response()->json(['message' => 'Invalid signature'], 400);
+        }
+
+        $event = $request->input('event');
+        $data = $request->input('data');
+
+        // Handle different transfer events
+        switch ($event) {
+            case 'transfer.success':
+                $transfer = DriverTransfers::where('reference', $data['reference'])->first();
+                if ($transfer) {
+                    $transfer->status = 'success';
+                    $transfer->save();
+                }
+                break;
+
+            case 'transfer.failed':
+                $transfer = DriverTransfers::where('reference', $data['reference'])->first();
+                if ($transfer) {
+                    $transfer->status = 'failed';
+                    $transfer->save();
+                }
+                break;
+
+            case 'transfer.reversed':
+                $transfer = DriverTransfers::where('reference', $data['reference'])->first();
+                if ($transfer) {
+                    $transfer->status = 'reversed';
+                    $transfer->save();
+                }
+                break;
+        }
+
+        return response()->json(['message' => 'Webhook processed successfully'], 200);
     }
 }

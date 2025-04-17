@@ -240,42 +240,63 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function editProfile(Request $request)
+    public function updateCoverPicture(Request $request)
     {
         // Validate the request
-        $validator = Validator::make($request->all(), [
-            'profile_picture' => 'image|mimes:jpeg,png,jpg,gif,svg',
-            'name' => 'string|max:255',
-            'phone_number_type' => 'string|max:255',
-            'phone_number' => 'string|max:12',
-            // 'email' => 'string|email|max:255|unique:users,email,' . auth()->id(),
+        $request->validate([
+            'cover_picture' => 'required|image|mimes:jpeg,png,jpg,gif,svg',
         ]);
 
-        if ($validator->fails()) {
+        $user = $request->user();
+
+        if ($user->account_type !== 'restaurant') {
             return response()->json([
-                'errors' => $validator->errors()
-            ], 422);
+                'message' => 'Only restaurants can update cover pictures'
+            ], 403);
         }
 
-        $user = auth()->user();
+        $restaurant = Restaurant::where('user_id', $user->id)->first();
 
-        // Handle image upload if present
-        if ($request->hasFile('profile_picture')) {
-            $imagePath = $request->file('profile_picture')->store('image', 'public');
-            $user->profile_picture_url = $imagePath;
-
-            if ($user->account_type == 'restaurant') {
-                $restaurant = Restaurant::where('user_id', $user->id)->first();
-                $restaurant->logo = $imagePath;
-                $restaurant->save();
-            }
+        if (!$restaurant) {
+            return response()->json([
+                'message' => 'Restaurant not found'
+            ], 404);
         }
 
-        // Update other profile details if present
+        // Store the image
+        if ($request->hasFile('cover_picture')) {
+            $image = $request->file('cover_picture');
+            $filename = time() . '.' . $image->getClientOriginalExtension();
+            $image->store('image', $filename);
+            
+            // Update the restaurant's cover picture
+            $restaurant->cover_picture = $image;
+            $restaurant->save();
+        }
+
+        return response()->json([
+            'message' => 'Cover picture updated successfully',
+            'cover_picture_url' => asset('public/storage/' . $restaurant->cover_picture)
+        ]);
+    }
+
+    public function editProfile(Request $request)
+    {
+        $user = $request->user();
+
+        // Validate the request
+        $request->validate([
+            'name' => 'nullable|string|max:255',
+            'phone_number' => 'nullable|numeric|unique:users,phone_number,' . $user->id,
+            'phone_number_type' => 'nullable|in:whatsapp,sms,both',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
+            'cover_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg',
+        ]);
+
+        // Update user profile
         if ($request->name) {
             $user->name = $request->name;
         }
-
         if ($request->phone_number_type) {
             $user->phone_number_type = $request->phone_number_type;
         }
@@ -283,19 +304,38 @@ class ProfileController extends Controller
             $user->phone_number = $request->phone_number;
         }
 
-        // // Check if email is updated
-        // if ($request->email && $user->email !== $request->email) {
-        //     $user->email = $request->email;
-        //     $user->email_verified_at = null; // Reset email verification
-        //     $authController = new AuthController();
-        //     $authController->getOtp($request); // Call getOtp function
-        // }
+        // Handle profile picture upload if present
+        if ($request->hasFile('profile_picture')) {
+            $imagePath = $request->file('profile_picture')->store('image', 'public');
+            $user->profile_picture_url = $imagePath;
+            
+            if ($user->account_type == 'restaurant') {
+                $restaurant = Restaurant::where('user_id', $user->id)->first();
+                if ($restaurant) {
+                    $restaurant->logo = $imagePath;
+                    $restaurant->save();
+
+             if ($request->hasFile('cover_picture')) {
+                    $image = $request->file('cover_picture');
+                    $image->store('image', 'public');
+                    
+                    $restaurant->cover_picture = $image;
+                    $restaurant->save();
+                }
+                }
+            }
+        }
+
+     
 
         $user->save();
 
         return response()->json([
             'message' => "Profile Updated successfully",
-            'user' => $user
+            'user' => $user,
+            'profile_picture_url' => $user->profile_picture_url ? asset('public/storage/' . $user->profile_picture_url) : null,
+            'cover_picture_url' => $user->account_type === 'restaurant' && $restaurant->cover_picture ? 
+                asset('public/storage/' . $restaurant->cover_picture) : null
         ]);
     }
 

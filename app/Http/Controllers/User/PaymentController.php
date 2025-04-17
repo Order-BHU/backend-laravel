@@ -105,6 +105,11 @@ class PaymentController extends Controller
                 break;
         }
 
+        $transferCode = $request->input('transfer_code');
+        $transfer->transfer_code = $transferCode;
+        $transfer->save();
+        
+
         return response()->json(['message' => 'Webhook processed successfully'], 200);
     }
 }

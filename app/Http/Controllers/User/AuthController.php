@@ -496,7 +496,7 @@ class AuthController extends Controller
             ];
 
             // Return HTML with JavaScript to post message and close popup
-            return view('auth.callback', ['data' => json_encode($data)]); // Pass data as JSON string
+            return view('auth.callback', ['data' => $data]); // Pass data as JSON string
 
         } catch (Exception $e) {
             // Log the error for debugging
@@ -507,7 +507,7 @@ class AuthController extends Controller
                 'message' => 'Authentication failed. Please try again.',
                 // 'error' => $e->getMessage() // Optionally include error details in development
             ];
-            return view('auth.callback', ['data' => json_encode($errorData), 'error' => true]);
+            return view('auth.callback', ['data' => $errorData]);
         }
     }
 

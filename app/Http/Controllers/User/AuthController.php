@@ -277,7 +277,7 @@ class AuthController extends Controller
 
     }
 
-    public function getOtp(Request $request)
+    public function getOtp(Request $request, BrevoMailer $brevo)
     {
         $request->validate([
             'email' => 'required|string|email|max:255|exists:users',
@@ -304,7 +304,7 @@ class AuthController extends Controller
 
         $email = $request->email;
 
-        $this->brevo->sendMail(
+        $brevo->sendMail(
             $email,
             'Support Team',
             'OTP from bhuorder',

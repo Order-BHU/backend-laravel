@@ -505,7 +505,7 @@ class AuthController extends Controller
             $errorData = [
                 'status' => 'error',
                 'message' => 'Authentication failed. Please try again.',
-                // 'error' => $e->getMessage() // Optionally include error details in development
+                'error' => $e->getMessage() // Optionally include error details in development
             ];
             return view('auth.callback', ['data' => $errorData]);
         }

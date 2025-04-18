@@ -500,7 +500,6 @@ class AuthController extends Controller
 
         } catch (Exception $e) {
             // Log the error for debugging
-            \Log::error('Google Callback Error: ' . $e->getMessage());
 
             // Return HTML with error message for the popup
             $errorData = [

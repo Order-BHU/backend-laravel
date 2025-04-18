@@ -208,7 +208,7 @@ class AuthController extends Controller
                         "bank_code" => $request->bank_code
                     ]);
 
-          
+                    
 
 
             $data = $response->json();
@@ -464,46 +464,51 @@ class AuthController extends Controller
     public function handleGoogleCallback()
     {
         try {
-            $user = Socialite::driver('google')->stateless()->user();
+            $googleUser = Socialite::driver('google')->stateless()->user();
 
-            $findUser = User::where('email', $user->email)->first();
+            $user = User::updateOrCreate([
+                'email' => $googleUser->getEmail(), // Use getEmail() for consistency
+            ], [
+                'name' => $googleUser->getName(),
+                'google_id' => $googleUser->getId(), // Store google_id for potential future use
+                'profile_picture_url' => $googleUser->getAvatar(),
+                'acccount_type' => 'customer', // Ensure this matches your DB column name exactly
+                // Avoid storing dummy passwords if possible, but if required for some reason:
+                // 'password' => Hash::make(Str::random(16)) // Generate a random secure password
+                'password' => null, // Or set password to null if direct login isn't needed
+            ]);
 
-            if ($findUser) {
-                $token = $findUser->createToken('auth_token')->plainTextToken;
+            // Ensure 'auth_token' matches the name used in createToken
+            $token = $user->createToken('auth_token')->plainTextToken;
 
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'Login successful',
-                    'profile_image' => $findUser->profile_picture_url,
-                    'token' => $token,
-                    'user' => $findUser
-                ]);
-            } else {
-                $newUser = User::create([
+            // Prepare data to send back to the React app
+            $data = [
+                'status' => 'success',
+                'message' => $user->wasRecentlyCreated ? 'User created successfully' : 'Login successful',
+                'token' => $token,
+                'user' => [ // Send only necessary user info
+                    'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
-                    'profile_picture_url' => $user->avatar,
-                    'acccount_type' => 'customer',
-                    'password' => encrypt('123456dummy')
-                ]);
+                    'profile_picture_url' => $user->profile_picture_url,
+                    'account_type' => $user->acccount_type, // Ensure correct spelling if it differs
+                ]
+            ];
 
-                $token = $newUser->createToken('auth_token')->plainTextToken;
+            // Return HTML with JavaScript to post message and close popup
+            return view('auth.callback', ['data' => json_encode($data)]); // Pass data as JSON string
 
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'User created successfully',
-                    'profile_image' => $newUser->profile_picture_url,
-                    'account_type' => $newUser->account_type,
-                    'token' => $token,
-                    'user' => $newUser
-                ]);
-            }
         } catch (Exception $e) {
-            return response()->json([
+            // Log the error for debugging
+            \Log::error('Google Callback Error: ' . $e->getMessage());
+
+            // Return HTML with error message for the popup
+            $errorData = [
                 'status' => 'error',
-                'message' => 'Something went wrong',
-                'error' => $e->getMessage()
-            ], 500);
+                'message' => 'Authentication failed. Please try again.',
+                // 'error' => $e->getMessage() // Optionally include error details in development
+            ];
+            return view('auth.callback', ['data' => json_encode($errorData), 'error' => true]);
         }
     }
 

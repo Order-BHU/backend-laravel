@@ -12,6 +12,7 @@ use App\Models\Order;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Models\Transactions;
+use App\Models\DriverTransfers;
 
 class ProfileController extends Controller
 {
@@ -91,11 +92,89 @@ class ProfileController extends Controller
                 ->where('status', 'completed')
                 ->count();
 
+            // Get recent completed deliveries
+            $recentDeliveries = Order::where('driver_id', $user->id)
+                ->where('status', 'completed')
+                ->orderBy('created_at', 'desc')
+                ->take(5)
+                ->get();
+
+            // Get driver's wallet information
+            $wallet = Wallet::where('user_id', $user->id)->first();
+            
+            // Get driver's transfer history
+            $transfers = DriverTransfers::where('user_id', $user->id)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            // Calculate earnings for different time periods
+            $todayEarnings = Order::where('driver_id', $user->id)
+                ->where('status', 'completed')
+                ->whereDate('created_at', today())
+                ->sum('total');
+
+            $weeklyEarnings = Order::where('driver_id', $user->id)
+                ->where('status', 'completed')
+                ->whereDate('created_at', '>=', now()->subWeek())
+                ->sum('total');
+
+            $monthlyEarnings = Order::where('driver_id', $user->id)
+                ->where('status', 'completed')
+                ->whereDate('created_at', '>=', now()->subMonth())
+                ->sum('total');
+
+            // Get driver's performance metrics
+            $totalDeliveries = Order::where('driver_id', $user->id)
+                ->where('status', 'completed')
+                ->count();
+
+            $averageDeliveryTime = Order::where('driver_id', $user->id)
+                ->where('status', 'completed')
+                ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, created_at, updated_at)) as avg_time')
+                ->first();
+
             return response()->json(array_merge($baseResponse, [
                 'status' => $user->status,
-                'accepted_deliveries' => $acceptedDeliveries,
-                'delivering_deliveries' => $deliveringDeliveries,
-                'total_deliveries' => $completedDeliveries
+                'delivery_metrics' => [
+                    'accepted_deliveries' => $acceptedDeliveries,
+                    'delivering_deliveries' => $deliveringDeliveries,
+                    'total_deliveries' => $completedDeliveries,
+                    'average_delivery_time' => round($averageDeliveryTime->avg_time ?? 0, 2) . ' minutes'
+                ],
+                'earnings' => [
+                    'today' => $todayEarnings,
+                    'this_week' => $weeklyEarnings,
+                    'this_month' => $monthlyEarnings,
+                    'total' => $totalDeliveries * 180, // Assuming 180 is the fixed delivery fee
+                    'wallet_balance' => $wallet ? $wallet->balance : 0
+                ],
+                'recent_deliveries' => $recentDeliveries->map(function ($order) {
+                    $restaurant = Restaurant::where('id', $order->restaurant_id)->first();
+                    $customer = User::where('id', $order->user_id)->first();
+                    
+                    return [
+                        'order_id' => $order->id,
+                        'restaurant_name' => $restaurant ? $restaurant->name : 'Unknown',
+                        'customer_name' => $customer ? $customer->name : 'Unknown',
+                        'total_amount' => $order->total,
+                        'delivery_time' => $order->created_at->diffForHumans(),
+                        'status' => $order->status
+                    ];
+                }),
+                'transfer_history' => $transfers->map(function ($transfer) {
+                    return [
+                        'reference' => $transfer->reference,
+                        'status' => $transfer->status,
+                        'amount' => 180, // Fixed delivery fee
+                        'date' => $transfer->created_at->format('Y-m-d H:i:s')
+                    ];
+                }),
+                'performance_metrics' => [
+                    'total_deliveries' => $totalDeliveries,
+                    'average_delivery_time' => round($averageDeliveryTime->avg_time ?? 0, 2) . ' minutes',
+                    'completion_rate' => $totalDeliveries > 0 ? 
+                        round(($completedDeliveries / $totalDeliveries) * 100, 2) . '%' : '0%'
+                ]
             ]));
         }
 

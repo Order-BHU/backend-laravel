@@ -566,8 +566,12 @@ class OrderController extends Controller
 
     public function trackOrder()
     {
-
-        $order = Order::where('user_id', auth()->user()->id)->where('status', '!=', 'completed')->first();
+        $user = auth()->user();
+        
+        // Get the active order with eager loading to reduce queries
+        $order = Order::where('user_id', $user->id)
+            ->where('status', '!=', 'completed')
+            ->first();
 
         if (!$order) {
             return response()->json([
@@ -575,37 +579,70 @@ class OrderController extends Controller
             ], 200);
         }
 
+        // Get restaurant owner information
+        $restaurantOwner = Restaurant::where('id', $order->restaurant_id)->first();
 
-
-        $restaurant = Restaurant::where('id', $order->restaurant_id)->first();
-        $restaurantOwner = User::where('id', $restaurant->user_id)->first();
-
-        if (!is_null($order->driver_id)) {
-            $driver = User::where('id', $order->driver_id)->first();
-
-            return response()->json([
-                'total' => $order->total,
-                'order_id' => $order->id,
-                'restaurant_name' => $restaurant->name,
-                'restaurant_email' => $restaurantOwner->email,
-                'order_code' => $order->code,
-                'status' => $order->status,
-                'driver_name' => $driver->name,
-                'driver_number' => $driver->phone_number,
-                'driver_profile_photo' => asset('public/storage/', $driver->profile_picture_url),
-                'items' => $order->items
-            ], 200);
-        } else {
-            return response()->json([
-                'total' => $order->total,
-                'order_id' => $order->id,
-                'restaurant_name' => $restaurant->name,
-                'restaurant_email' => $restaurantOwner->email,
-                'status' => $order->status,
-                'items' => $order->items
-            ], 200);
+        // Calculate estimated delivery time
+        $estimatedDeliveryTime = null;
+        if ($order->status === 'delivering' && $order->driver_id) {
+            // Get average delivery time for this driver
+            $avgDeliveryTime = Order::where('driver_id', $order->driver_id)
+                ->where('status', 'completed')
+                ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, created_at, updated_at)) as avg_time')
+                ->first();
+            
+            if ($avgDeliveryTime->avg_time) {
+                $estimatedDeliveryTime = now()->addMinutes(round($avgDeliveryTime->avg_time));
+            }
         }
 
+        // Get order items with menu details
+        $items = collect($order->items)->map(function ($item) {
+            $menu = Menu::find($item['menu_id']);
+            return [
+                'name' => $menu ? $menu->name : 'Unknown Item',
+                'quantity' => $item['quantity'],
+                'price' => $menu ? $menu->price : 0,
+                'total' => $menu ? ($menu->price * $item['quantity']) : 0
+            ];
+        });
+
+        // Prepare response data
+        $response = [
+            'total' => $order->total,
+            'order_id' => $order->id,
+            'restaurant_name' => $restaurantOwner->name,
+            'restaurant_email' => $restaurantOwner->email,
+            'order_code' => $order->code,
+            'status' => $order->status,
+            'items' => $items,
+            'order_date' => $order->created_at->format('Y-m-d H:i:s'),
+            'customer_location' => $order->customer_location,
+            'estimated_delivery_time' => $estimatedDeliveryTime ? $estimatedDeliveryTime->format('Y-m-d H:i:s') : null,
+            'time_elapsed' => $order->created_at->diffForHumans(),
+            'status_history' => [
+                'pending' => $order->created_at->format('Y-m-d H:i:s'),
+                'accepted' => $order->status === 'accepted' ? $order->updated_at->format('Y-m-d H:i:s') : null,
+                'ready' => $order->status === 'ready' ? $order->updated_at->format('Y-m-d H:i:s') : null,
+                'delivering' => $order->status === 'delivering' ? $order->updated_at->format('Y-m-d H:i:s') : null
+            ]
+        ];
+
+        $driver = User::where('id', $order->driver_id)->first();
+
+        // Add driver information if available
+        if ($driver->driver_id) {
+            $response['driver_name'] = $driver->name;
+            $response['driver_number'] = $driver->phone_number;
+            $response['driver_profile_photo'] = asset('public/storage/' . $driver->profile_picture_url);
+            
+            // Add driver's current status
+            $response['driver_status'] = $driver->status;
+            
+        
+        }
+
+        return response()->json($response, 200);
     }
 
 

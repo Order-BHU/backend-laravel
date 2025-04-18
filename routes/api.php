@@ -24,6 +24,7 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
             Route::post('/reset-password', 'AuthController@resetPassword');
             Route::get('locations', 'ProfileController@getLocations');
 
+
             Route::get('auth/google', 'AuthController@redirectToGoogle');
             Route::get('auth/google/callback', 'AuthController@handleGoogleCallback');
 

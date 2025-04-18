@@ -5,10 +5,10 @@
     <title>Authentication Callback</title>
     <script>
         // Send the data to the opener window
-        window.opener.postMessage({!! $data !!}, '*'); // Use {!! !!} for unescaped JSON
+        window.opener.postMessage({!! $data !!}, '*') // Use {!! !!} for unescaped JSON
 
         // Close the popup
-        window.close();
+        window.close()
     </script>
 </head>
 <body>

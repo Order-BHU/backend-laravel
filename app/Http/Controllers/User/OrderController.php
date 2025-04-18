@@ -600,9 +600,9 @@ class OrderController extends Controller
         $items = collect($order->items)->map(function ($item) {
             $menu = Menu::find($item['menu_id']);
             return [
-                'name' => $menu ? $menu->name : 'Unknown Item',
+                'menu_name' => $menu ? $menu->name : 'Unknown Item',
                 'quantity' => $item['quantity'],
-                'price' => $menu ? $menu->price : 0,
+                'menu_price' => $menu ? $menu->price : 0,
                 'total' => $menu ? ($menu->price * $item['quantity']) : 0
             ];
         });

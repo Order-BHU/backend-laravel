@@ -473,9 +473,7 @@ class AuthController extends Controller
                 'google_id' => $googleUser->getId(), // Store google_id for potential future use
                 'profile_picture_url' => $googleUser->getAvatar(),
                 'account_type' => 'customer', // Ensure this matches your DB column name exactly
-                // Avoid storing dummy passwords if possible, but if required for some reason:
                 'password' => Hash::make(Str::random(16)) // Generate a random secure password
-                // 'password' => null, // Or set password to null if direct login isn't needed
             ]);
 
             // Ensure 'auth_token' matches the name used in createToken
@@ -491,7 +489,7 @@ class AuthController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                     'profile_picture_url' => $user->profile_picture_url,
-                    'account_type' => $user->account_type, // Ensure correct spelling if it differs
+                    'account_type' => $user->account_type, 
                 ]
             ];
 

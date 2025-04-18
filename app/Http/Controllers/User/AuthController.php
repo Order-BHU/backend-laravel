@@ -473,7 +473,8 @@ class AuthController extends Controller
                 'google_id' => $googleUser->getId(), // Store google_id for potential future use
                 'profile_picture_url' => $googleUser->getAvatar(),
                 'account_type' => 'customer', // Ensure this matches your DB column name exactly
-                'password' => Hash::make(Str::random(16)) // Generate a random secure password
+                'password' => Hash::make(Str::random(16)),
+                'activated' => 1
             ]);
 
             // Ensure 'auth_token' matches the name used in createToken

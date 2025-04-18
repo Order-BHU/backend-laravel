@@ -24,7 +24,10 @@ class User extends Authenticatable
         'password',
         'phone_number',
         'phone_number_type',
-        'account-type',
+        'profile_picture_url',
+        'account_type',
+        'activated',
+        'google_id',
         'otp'
     ];
 

@@ -474,8 +474,8 @@ class AuthController extends Controller
                 'profile_picture_url' => $googleUser->getAvatar(),
                 'acccount_type' => 'customer', // Ensure this matches your DB column name exactly
                 // Avoid storing dummy passwords if possible, but if required for some reason:
-                // 'password' => Hash::make(Str::random(16)) // Generate a random secure password
-                'password' => null, // Or set password to null if direct login isn't needed
+                'password' => Hash::make(Str::random(16)) // Generate a random secure password
+                // 'password' => null, // Or set password to null if direct login isn't needed
             ]);
 
             // Ensure 'auth_token' matches the name used in createToken

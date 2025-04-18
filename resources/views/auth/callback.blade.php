@@ -5,7 +5,7 @@
     <title>Authentication Callback</title>
     <script>
         // Send the data to the opener window
-        window.opener.postMessage({{ $data }}, '*')
+        window.opener.postMessage( @json($data), '*')
 
         // Close the popup
         window.close()

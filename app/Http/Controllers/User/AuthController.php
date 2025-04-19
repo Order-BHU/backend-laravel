@@ -177,7 +177,6 @@ class AuthController extends Controller
                 'phone_number' => 'required|numeric|unique:users',
                 'phone_number_type' => 'required|in:whatsapp,sms,both',
                 'account_no' => 'required|string',
-                'bank_name' => 'required|string',
                 'bank_code' => 'required|string',
                 'account_type' => 'required'
             ]);
@@ -207,7 +206,7 @@ class AuthController extends Controller
             ])->post(env('PAYSTACK_PAYMENT_URL') . '/transferrecipient', [
                         "type" => "nuban",
                         "name" => $user->name,
-                        "account_number" => $request->acoount_no,
+                        "account_number" => $request->account_no,
                         "bank_code" => $request->bank_code
                     ]);
 

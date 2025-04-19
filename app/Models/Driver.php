@@ -10,6 +10,6 @@ class Driver extends Model
 
     protected $fillable = [
        'user_id',
-       'receipient_code',
+       'recipient_code',
     ];
 }

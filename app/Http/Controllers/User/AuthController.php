@@ -176,6 +176,9 @@ class AuthController extends Controller
                 'password' => 'required|string|min:8',
                 'phone_number' => 'required|numeric|unique:users',
                 'phone_number_type' => 'required|in:whatsapp,sms,both',
+                'account_no' => 'required|string',
+                'bank_name' => 'required|string',
+                'bank_code' => 'required|string',
                 'account_type' => 'required'
             ]);
 

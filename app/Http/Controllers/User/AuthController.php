@@ -218,6 +218,8 @@ class AuthController extends Controller
                 return response()->json(['error' => $data['message']], 400);
             }
 
+            return $data;
+
             $driver = Driver::create([
                 'user_id'=> $user->id,
                 'recipient_code'=> $data['data']['recipient_code']

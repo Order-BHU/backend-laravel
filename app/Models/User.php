@@ -28,6 +28,7 @@ class User extends Authenticatable
         'account_type',
         'activated',
         'google_id',
+        'status',
         'otp'
     ];
 

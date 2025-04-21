@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\User\AuthController;
 use App\Models\Order;
+use Illuminate\Support\Str;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Models\Transactions;
@@ -19,8 +20,9 @@ class ProfileController extends Controller
     public function myDashboard(Request $request)
     {
         $user = $request->user();
-        $user->profile_picture_url = asset('public/storage/' . $user->profile_picture_url);
-
+        if (!Str::startsWith($user->profile_picture_url, ['http://', 'https://'])) {
+            $user->profile_picture_url = asset('storage/' . $user->profile_picture_url);
+        }
         $baseResponse = [
             'user' => $user,
             'account_type' => $user->account_type

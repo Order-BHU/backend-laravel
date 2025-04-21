@@ -43,8 +43,8 @@ class OrderController extends Controller
         ])->post('https://api.paystack.co/transaction/initialize', [
                     'email' => $user->email,
                     'amount' => $request->total * 100, // Amount in kobo
-                    // 'subaccount' => $restaurant->subaccount_code, 2 lines are for split payments
-                    // 'transaction_charge' => fee * 100,  Charge amount in kobo
+                    'subaccount' => $restaurant->subaccount_code, 
+                    'transaction_charge' => $fee * 100,   
                     'callback_url' => 'https://bhuorder.com/menu/' . $request->callback_id
 
                 ]);

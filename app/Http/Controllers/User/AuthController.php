@@ -469,16 +469,19 @@ class AuthController extends Controller
         try {
             $googleUser = Socialite::driver('google')->stateless()->user();
 
-            $user = User::updateOrCreate([
-                'email' => $googleUser->getEmail(), // Use getEmail() for consistency
-            ], [
-                'name' => $googleUser->getName(),
-                'google_id' => $googleUser->getId(), // Store google_id for potential future use
-                'profile_picture_url' => $googleUser->getAvatar(),
-                'account_type' => 'customer', // Ensure this matches your DB column name exactly
-                'password' => Hash::make(Str::random(16)),
-                'activated' => 1
-            ]);
+            $user = User::where('email', $googleUser->getEmail())->first();
+
+            if (!$user) {
+                $user = User::create([
+                    'email' => $googleUser->getEmail(),
+                    'name' => $googleUser->getName(),
+                    'google_id' => $googleUser->getId(),
+                    'profile_picture_url' => $googleUser->getAvatar(),
+                    'account_type' => 'customer',
+                    'password' => Hash::make(Str::random(16)),
+                    'activated' => 1
+                ]);
+            }
 
             // Ensure 'auth_token' matches the name used in createToken
             $token = $user->createToken('auth_token')->plainTextToken;

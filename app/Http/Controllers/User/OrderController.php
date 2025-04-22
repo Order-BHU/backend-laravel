@@ -530,6 +530,14 @@ class OrderController extends Controller
 
                     $reference = Str::uuid();
 
+                    if(!$driver->recipient_code){
+                        return response()->json(
+                            [
+                                'message'=>'Your account details is not registered'
+                            ],
+                            401);
+                    }
+
                     $response = Http::withHeaders([
                         'Authorization' => 'Bearer ' . env('PAYSTACK_SECRET_KEY'),
                         'Content-Type' => 'application/json',

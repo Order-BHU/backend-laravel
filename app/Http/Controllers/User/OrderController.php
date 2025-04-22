@@ -530,7 +530,7 @@ class OrderController extends Controller
 
                     $reference = Str::uuid();
 
-                    if(!$driver->recipient_code){
+                    if(!$driver){
                         return response()->json(
                             [
                                 'message'=>'Your account details is not registered'

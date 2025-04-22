@@ -14,6 +14,7 @@ use App\Models\User;
 use Illuminate\Support\Str;
 use App\Models\Transactions;
 use App\Models\Wallet;
+use App\Models\Driver;
 
 class OrderController extends Controller
 {
@@ -235,6 +236,7 @@ class OrderController extends Controller
                         'status' => $order->status,
                         'items' => $menus,
                         'total' => $order->total,
+                        'location'=>$order->customer_location,
                         'order_date' => $order->order_date
                     ];
                     array_push($ordersArray, $orderArray);
@@ -302,6 +304,7 @@ class OrderController extends Controller
                         'restaurant_name' => $restaurant->name,
                         'items' => $order->items,
                         'total' => $order->total,
+                        'location' => $order->customer_location,
                         'order_date' => $order->order_date
                     ];
                     array_push($ordersArray, $orderArray);
@@ -461,7 +464,6 @@ class OrderController extends Controller
                     if (!$availableDriver) {
                         return response()->json([
                             'message' => 'No availble driver at the moment',
-                            'driver_id' => $availableDriver
                         ], 200);
                     }
 

@@ -70,7 +70,7 @@ class OrderController extends Controller
         ]);
 
         // Converts the total amount to naira
-        $total = $request->total / 100;
+        $total = $request->total / 1000;
 
         // Generate a random 6-character alphanumeric code
         $randomCode = rand(1000, 9999);

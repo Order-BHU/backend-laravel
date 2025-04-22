@@ -641,7 +641,7 @@ class OrderController extends Controller
         $driver = User::where('id', $order->driver_id)->first();
 
         // Add driver information if available
-        if ($driver->driver_id) {
+        if ($driver) {
             $response['driver_name'] = $driver->name;
             $response['driver_number'] = $driver->phone_number;
             $response['driver_profile_photo'] = asset('public/storage/' . $driver->profile_picture_url);

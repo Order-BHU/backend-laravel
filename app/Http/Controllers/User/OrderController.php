@@ -36,7 +36,7 @@ class OrderController extends Controller
             'callback_id' => 'required'
         ]);
         $user = $request->user();
-        $fee = 300;
+        $fee = 300 * 100;
         $total = ($request->total * 100) + $fee;
         $restaurant = Restaurant::where('id', $restaurantId)->first();
         $response = Http::withHeaders([
@@ -46,7 +46,7 @@ class OrderController extends Controller
                     'email' => $user->email,
                     'amount' => $total, // Amount in kobo
                     'subaccount' => $restaurant->subaccount_code, 
-                    'transaction_charge' => $fee * 100,   
+                    'transaction_charge' => $fee,   
                     'callback_url' => 'https://bhuorder.com/menu/' . $request->callback_id
 
                 ]);
@@ -54,7 +54,8 @@ class OrderController extends Controller
 
         $data = $response->json();
         if (!$data['status']) {
-            return response()->json($response->json(), 400);
+            return response()->json(
+                [$response->json(),$total,$fee], 400);
         }
 
         return response()->json(['data' => $data['data']], 200);

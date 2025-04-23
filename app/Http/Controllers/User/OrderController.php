@@ -37,13 +37,14 @@ class OrderController extends Controller
         ]);
         $user = $request->user();
         $fee = 300;
+        $total = ($request->total * 100) + $fee;
         $restaurant = Restaurant::where('id', $restaurantId)->first();
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . env('PAYSTACK_SECRET_KEY'),
             'Content-Type' => 'application/json',
         ])->post('https://api.paystack.co/transaction/initialize', [
                     'email' => $user->email,
-                    'amount' => ($request->total * 100) + $fee, // Amount in kobo
+                    'amount' => $total, // Amount in kobo
                     'subaccount' => $restaurant->subaccount_code, 
                     'transaction_charge' => $fee * 100,   
                     'callback_url' => 'https://bhuorder.com/menu/' . $request->callback_id

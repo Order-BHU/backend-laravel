@@ -448,31 +448,33 @@ class OrderController extends Controller
 
                 // Gets all drivers
                 $drivers = User::select('id')->where('account_type', 'driver')->where('status', 'online')->get();
+                $driverIds = $drivers->pluck('id')->toArray();
 
-                // Get all drivers with no orders
-                $driversWithNoOrders = array_diff($drivers->pluck('id')->toArray(), Order::pluck('driver_id')->where("status", "!=", "completed")->toArray());
+                // Get all driver IDs with active (non-completed) orders
+                $busyDrivers = Order::where("status", "!=", "completed")->pluck('driver_id')->toArray();
 
-                return $driversWithNoOrders;
-                // If all drivers have orders, find driver with least number of orders
+                // Get drivers with no active orders
+                $driversWithNoOrders = array_diff($driverIds, $busyDrivers);
+
                 if (empty($driversWithNoOrders)) {
-                    // Finds driver with least Orders
+                    // Finds driver with least orders
                     $availableDriver = Order::select('driver_id')
-                        ->whereIn('driver_id', $drivers->pluck('id')->toArray())
+                        ->whereIn('driver_id', $driverIds)
                         ->groupBy('driver_id')
                         ->orderByRaw('COUNT(*) ASC')
                         ->limit(1)
                         ->value('driver_id');
 
-                    // No Available driver
                     if (!$availableDriver) {
                         return response()->json([
-                            'message' => 'No availble driver at the moment',
+                            'message' => 'No available driver at the moment',
                         ], 200);
                     }
 
                 } else {
-                    $availableDriver = $driversWithNoOrders[0];
+                    $availableDriver = array_values($driversWithNoOrders)[0]; // To get indexed value
                 }
+
 
                 $order->status = $status;
                 $order->save();

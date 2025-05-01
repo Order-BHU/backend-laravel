@@ -21,7 +21,7 @@ class ProfileController extends Controller
     {
         $user = $request->user();
         if (!Str::startsWith($user->profile_picture_url, ['http://', 'https://'])) {
-            $user->profile_picture_url = asset('storage/' . $user->profile_picture_url);
+            $user->profile_picture_url = asset('public/storage/' . $user->profile_picture_url);
         }
         $baseResponse = [
             'user' => $user,

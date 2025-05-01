@@ -385,26 +385,28 @@ class ProfileController extends Controller
             $user->phone_number = $request->phone_number;
         }
 
+        $restaurant = Restaurant::where('user_id', $user->id)->first();
+
+
         // Handle profile picture upload if present
         if ($request->hasFile('profile_picture')) {
             $imagePath = $request->file('profile_picture')->store('image', 'public');
             $user->profile_picture_url = $imagePath;
             
             if ($user->account_type == 'restaurant') {
-                $restaurant = Restaurant::where('user_id', $user->id)->first();
                 if ($restaurant) {
                     $restaurant->logo = $imagePath;
                     $restaurant->save();
-
-             if ($request->hasFile('cover_picture')) {
-                    $image = $request->file('cover_picture');
-                    $image->store('image', 'public');
-                    
-                    $restaurant->cover_picture = $image;
-                    $restaurant->save();
-                }
                 }
             }
+        }
+
+        if ($request->hasFile('cover_picture')) {
+            $image = $request->file('cover_picture');
+            $image->store('image', 'public');
+
+            $restaurant->cover_picture = $image;
+            $restaurant->save();
         }
 
      

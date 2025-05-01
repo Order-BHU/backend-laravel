@@ -64,7 +64,7 @@ class RestaurantController extends Controller
 
 
         return response()->json([
-            'cover_picture' => asset('public/storage/' . $restaurant->cover_picture),
+            'cover_picture' =>$restaurant->cover_picture ? asset('public/storage/' . $restaurant->cover_picture): null,
             'restaurant' => $restaurant,
             'menu' => $categories,
         ], 200);

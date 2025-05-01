@@ -25,7 +25,7 @@ class CartController extends Controller
 
         // Check if cart has items from a different restaurant
         $existingCartItems = Cart::where('user_id', $request->user()->id)
-            ->join('menus', 'carts.menu_id', '=', 'menus.id')
+            ->join('menu', 'carts.menu_id', '=', 'menus.id')
             ->select('menus.restaurant_id')
             ->first();
 

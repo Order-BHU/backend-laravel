@@ -14,27 +14,47 @@ class CartController extends Controller
 
     public function addToCart(Request $request, $menuId)
     {
+        // Get the incoming menu's restaurant ID
+        $incomingRestaurantId = Menu::where('id', $menuId)->select('restaurant_id')->first();
 
-        $inCart = Cart::where('menu_id',$menuId)
-                  ->where('user_id', $request->user()->id)->first();
+        if (!$incomingRestaurantId) {
+            return response()->json([
+                'message' => 'Menu item not found'
+            ], 404);
+        }
 
-        if(!$inCart){
-            $cart = Cart::create([
-                'menu_id' => $menuId,
-                'user_id' => $request->user()->id
-            ]);
+        // Check if cart has items from a different restaurant
+        $existingCartItems = Cart::where('user_id', $request->user()->id)
+            ->join('menus', 'carts.menu_id', '=', 'menus.id')
+            ->select('menus.restaurant_id')
+            ->first();
+
+        if ($existingCartItems && $existingCartItems->restaurant_id != $incomingRestaurantId->restaurant_id) {
+            return response()->json([
+                'message' => 'Cannot add items from multiple restaurants'
+            ], 400);
         }
-        else{
-           return response()->json([
-            'message' => 'Item already in cart',
-           ]);
+
+        // Check if item is already in cart
+        $inCart = Cart::where('menu_id', $menuId)
+            ->where('user_id', $request->user()->id)
+            ->first();
+
+        if ($inCart) {
+            return response()->json([
+                'message' => 'Item already in cart'
+            ], 400);
         }
+
+        // Add item to cart
+        $cart = Cart::create([
+            'menu_id' => $menuId,
+            'user_id' => $request->user()->id
+        ]);
 
         return response()->json([
-            'message' => "Item added to cart",
-            
+            'message' => 'Item added to cart'
         ], 200);
-
     }
 
     public function removeCartItem(Request $request,$menuId){

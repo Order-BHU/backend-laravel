@@ -307,7 +307,8 @@ class OrderController extends Controller
                         'items' => $order->items,
                         'total' => $order->total,
                         'location' => $order->customer_location,
-                        'order_date' => $order->order_date
+                        'order_date' => $order->order_date,
+                        'status' => $order->status
                     ];
                     array_push($ordersArray, $orderArray);
                 }

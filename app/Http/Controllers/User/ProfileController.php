@@ -402,8 +402,7 @@ class ProfileController extends Controller
         }
 
         if ($request->hasFile('cover_picture')) {
-            $image = $request->file('cover_picture');
-            $image->store('image', 'public');
+            $image = $request->file('cover_picture')->store('image', 'public');
 
             $restaurant->cover_picture = $image;
             $restaurant->save();

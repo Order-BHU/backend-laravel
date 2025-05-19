@@ -531,9 +531,7 @@ class OrderController extends Controller
                 // Check if the code in the request matches the one saved in the database
                 if ($request->code == $order->code) {
 
-                    $order->status = $status;
-                    $order->save();
-
+                   
                     $reference = Str::uuid();
 
                     if(!$driver){
@@ -565,6 +563,11 @@ class OrderController extends Controller
                         'status'=> 'pending',
                         'reference'=> $reference,
                     ]);
+
+
+                    $order->status = $status;
+                    $order->save();
+
 
 
                     return response()->json([

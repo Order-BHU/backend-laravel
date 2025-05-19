@@ -31,7 +31,7 @@ class CartController extends Controller
 
         if ($existingCartItems && $existingCartItems->restaurant_id != $incomingRestaurantId->restaurant_id) {
             return response()->json([
-                'message' => 'Cannot add items from multiple restaurants'
+                'error' => 'Cannot add items from multiple restaurants'
             ], 400);
         }
 

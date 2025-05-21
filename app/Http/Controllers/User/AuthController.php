@@ -275,7 +275,7 @@ class AuthController extends Controller
         } else {
             return response()->json([
                 'message' => 'OTP not valid'
-            ], 201);
+            ], 400);
         }
 
     }

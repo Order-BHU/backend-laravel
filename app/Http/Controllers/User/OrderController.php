@@ -681,6 +681,21 @@ class OrderController extends Controller
         ], 200);
     }
 
+    public function driverList(){
+        $drivers = User::where('account_type', 'driver')
+            ->select('id', 'name', 'phone_number', 'profile_picture_url', 'status')
+            ->where('status', 'online')
+            ->get()
+            ->map(function ($driver) {
+                $driver->profile_picture_url = asset('public/storage/' . $driver->profile_picture_url);
+                return $driver;
+            });
+
+        return response()->json([
+            'drivers' => $drivers,
+        ], 200);
+    }
+
     public function quickChanges(Request $request)
     {
         if ($request->user()->account_type != 'admin') {

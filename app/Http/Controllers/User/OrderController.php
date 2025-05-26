@@ -702,7 +702,7 @@ class OrderController extends Controller
        
 
         $order = Order::find(42);
-        $order->user_id = 97;
+        $order->driver_id = 114;
         $order->save();
 
         return response()->json([

@@ -15,7 +15,7 @@ class RestaurantController extends Controller
 {
     public function restaurantList()
     {
-        $allRestaurants = Restaurant::select('id', 'name', 'logo')->get();
+        $allRestaurants = Restaurant::select('id', 'name', 'logo')->where('id', 14)->get();
 
         // Update the logo field to include the full URL path
         $allRestaurants->map(function ($restaurant) {

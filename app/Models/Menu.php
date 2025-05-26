@@ -15,6 +15,7 @@ class Menu extends Model
             'description',
             'price',
             'restaurant_id',
+            'is_available',
             'category_id',
             'image'
     ];

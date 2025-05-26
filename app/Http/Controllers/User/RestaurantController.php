@@ -97,7 +97,7 @@ class RestaurantController extends Controller
                 'name' => $request->name,
                 'description' => $request->description,
                 'restaurant_id' => $restaurantId,
-                'is_available'=>1,
+                'is_available'=> 1,
                 'price' => $request->price,
                 'category_id' => $request->category_id,
                 'image' => $imagePath

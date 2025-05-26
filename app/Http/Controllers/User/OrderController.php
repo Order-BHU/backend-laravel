@@ -673,21 +673,11 @@ class OrderController extends Controller
             ], 403);
         }
 
-        $orders = Order::get();
-        $users = User::get()->map(function ($user) {
-            return [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'phone_number' => $user->phone_number,
-                'account_type' => $user->account_type,
-                'profile_picture_url' => asset('public/storage/' . $user->profile_picture_url)
-            ];
-        });
+        $orders = Order::with(['user', 'driver'])->get();
+
 
         return response()->json([
             'orders' => $orders,
-            'users' => $users
         ], 200);
     }
 

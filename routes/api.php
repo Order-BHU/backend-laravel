@@ -51,7 +51,7 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
 
                 // Admin Access routes
                 Route::get('all-orders', 'OrderController@allOrders');
-                Route::post('quick-changes', 'OrderController@quickChanges');
+                Route::post('update-order', 'OrderController@updateOrder');
                 Route::get('driver-list', 'OrderController@driverList');
 
                 // Order routes

@@ -52,7 +52,7 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
                 // Admin Access routes
                 Route::get('all-orders', 'OrderController@allOrders');
                 Route::post('update-order', 'OrderController@updateOrder');
-                Route::get('driver-list', 'OrderController@driverList');
+                Route::get('{status}/driver-list', 'OrderController@driverList');
 
                 // Order routes
                 Route::post('{restaurantId}/initialize-checkout', 'OrderController@initializeCheckout');

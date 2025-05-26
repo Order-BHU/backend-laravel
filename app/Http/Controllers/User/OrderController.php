@@ -681,10 +681,17 @@ class OrderController extends Controller
         ], 200);
     }
 
-    public function driverList(){
+    public function driverList($status){
         $drivers = User::where('account_type', 'driver')
             ->select('id', 'name', 'phone_number', 'profile_picture_url', 'status')
-            ->where('status', 'online')
+            ->where('status', $status)
+            ->get()
+            ->map(function ($driver) {
+                $driver->profile_picture_url = asset('public/storage/' . $driver->profile_picture_url);
+                return $driver;
+            });
+        $alldrivers = User::where('account_type', 'driver')
+            ->select('id', 'name', 'phone_number', 'profile_picture_url', 'status')
             ->get()
             ->map(function ($driver) {
                 $driver->profile_picture_url = asset('public/storage/' . $driver->profile_picture_url);
@@ -692,7 +699,9 @@ class OrderController extends Controller
             });
 
         return response()->json([
-            'drivers' => $drivers,
+            $status . 'drivers' => $drivers,
+            'all_drivers' => $alldrivers
+
         ], 200);
     }
 

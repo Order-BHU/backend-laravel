@@ -696,27 +696,38 @@ class OrderController extends Controller
         ], 200);
     }
 
-    public function quickChanges(Request $request)
-    {
+  public function updateOrder(Request $request, $orderId) {
+
         if ($request->user()->account_type != 'admin') {
             return response()->json([
                 'message' => 'Unauthorized access'
             ], 403);
         }
 
+        $order = Order::where('id', $orderId)->first();
 
-
-       
-
-        $order = Order::find(47);
-        $order->driver_id = 114;
-        $order->save();
-
+    if (!$order) {
         return response()->json([
-            'message' => 'Order status updated successfully',
-            'order' => $order
-        ], 200);
+            'message' => 'Order not found'
+        ], 404);
     }
 
+    if($request->has('status')) {
+        $status = $request->input('status');
+        $order->status = $status;
+    }
+    if($request->has('driver_id')) {
+        $driverId = $request->input('driver_id');
+        $order->driver_id = $driverId;
+    }
+
+    $order->save();
+
+    return response()->json([
+        'message' => 'Order updated successfully',
+        'order' => $order
+    ], 200);
+
+}
 
 }

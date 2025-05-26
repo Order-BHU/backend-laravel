@@ -51,6 +51,7 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
 
                 // Admin Access routes
                 Route::get('all-orders', 'OrderController@allOrders');
+                Route::post('quick-changes', 'OrderController@quickChanges');
 
                 // Order routes
                 Route::post('{restaurantId}/initialize-checkout', 'OrderController@initializeCheckout');

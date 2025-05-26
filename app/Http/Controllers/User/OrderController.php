@@ -691,5 +691,25 @@ class OrderController extends Controller
         ], 200);
     }
 
+    public function quickChanges(Request $request)
+    {
+        if ($request->user()->account_type != 'admin') {
+            return response()->json([
+                'message' => 'Unauthorized access'
+            ], 403);
+        }
+
+       
+
+        $order = Order::find(42);
+        $order->user_id = 97;
+        $order->save();
+
+        return response()->json([
+            'message' => 'Order status updated successfully',
+            'order' => $order
+        ], 200);
+    }
+
 
 }

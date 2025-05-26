@@ -49,6 +49,9 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
                 Route::post('{menuId}/remove-cart-item', 'CartController@removeCartItem');
                 Route::get('/view-cart', 'CartController@viewCart');
 
+                // Admin Access routes
+                Route::get('all-orders', 'OrderController@allOrders');
+
                 // Order routes
                 Route::post('{restaurantId}/initialize-checkout', 'OrderController@initializeCheckout');
                 Route::post('{restaurantId}/checkout', 'OrderController@checkout');

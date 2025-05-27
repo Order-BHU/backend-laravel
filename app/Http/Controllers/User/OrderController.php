@@ -759,11 +759,11 @@ class OrderController extends Controller
         ], 404);
     }
 
-    if($request->has('status')) {
+    if($request->status) {
         $status = $request->input('status');
         $order->status = $status;
     }
-    if($request->has('driver_id')) {
+    if($request->driver_id) {
         $driverId = $request->input('driver_id');
         $order->driver_id = $driverId;
     }

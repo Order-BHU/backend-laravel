@@ -264,6 +264,25 @@
                     </div>
                 </div>
 
+
+            <!-- Customer Information -->
+            <div class="customer-info">
+                <div class="customer-title">Customer Information</div>
+                <div class="detail-row">
+                    <span class="detail-label">Name:</span>
+                    <span class="detail-value">{{ $customer_name }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Phone:</span>
+                    <span class="detail-value">{{ $customer_phone }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Email:</span>
+                    <span class="detail-value">{{ $customer_email }}</span>
+                </div>
+            
+            </div>
+
             <!-- Order Details -->
             <div class="order-details">
                 <h3 style="margin-bottom: 15px; color: #495057;">📋 Order Details</h3>
@@ -294,7 +313,7 @@
 @foreach($orderItems as $item)
 <div class="item-card">
     <div class="item-image">
-        <img src="{{ $item['image'] }}" alt="{{ $item['menu_name'] }}" />
+        <!-- <img src="{{ $item['image'] }}" alt="{{ $item['menu_name'] }}" /> -->
     </div>
     <div class="item-details">
         <div class="item-name">{{ $item['menu_name'] }}</div>
@@ -328,7 +347,7 @@
             @foreach($orderItems as $item)
                 <div class="item-card">
                     <div class="item-image">
-                        <img width="200" src="{{ $item['image'] }}" alt="{{ $item['menu_name'] }}" />
+                        <!-- <img width="200" src="{{ $item['image'] }}" alt="{{ $item['menu_name'] }}" /> -->
                     </div>
                     <div class="item-details">
                         <div class="item-name">{{ $item['menu_name'] }}</div>
@@ -357,23 +376,7 @@
             </div>
         </div>
 
-            <!-- Customer Information -->
-            <div class="customer-info">
-                <div class="customer-title">Customer Information</div>
-                <div class="detail-row">
-                    <span class="detail-label">Name:</span>
-                    <span class="detail-value">{{ $customer_name }}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Phone:</span>
-                    <span class="detail-value">{{ $customer_phone }}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Email:</span>
-                    <span class="detail-value">{{ $customer_email }}</span>
-                </div>
-         
-            </div>
+          
 
      
 

@@ -213,7 +213,7 @@ class OrderController extends Controller
                 ], 200);
             } elseif ($orderType == 'accepted') {
                 $orders = Order::where('restaurant_id', $restaurant->id)
-                    ->where('status', 'accepted')->get();
+                    ->where('status', 'accepted')->orderBy('created_at', 'desc')->get();
                 $ordersArray = [];
                 foreach ($orders as $order) {
                     $restaurant = Restaurant::where('id', $order->restaurant_id)->first();
@@ -325,7 +325,7 @@ class OrderController extends Controller
 
             if ($orderType == 'ready') {
                 $orders = Order::where('driver_id', $request->user()->id)
-                    ->where('status', 'ready')->get();
+                    ->where('status', 'ready')->orderBy('created_at', 'desc')->get();
 
                 $ordersArray = [];
                 foreach ($orders as $order) {
@@ -709,7 +709,9 @@ class OrderController extends Controller
             ], 403);
         }
 
-        $orders = Order::with(['user', 'driver'])->get();
+        $orders = Order::with(['user', 'driver'])
+        ->orderBy('created_at', 'desc')
+        ->get();
 
 
         return response()->json([

@@ -233,7 +233,7 @@
         <!-- Header -->
         <div class="header">
             <h1>🚚 New Delivery Order</h1>
-            <div class="order-badge">Order #DEL-2024-001234</div>
+            <div class="order-badge">Order {{ $order_id }}</div>
         </div>
 
         <!-- Content -->
@@ -244,6 +244,25 @@
                 <p>You have been assigned a new delivery order. Please review the details below and confirm acceptance.
                 </p>
             </div>
+
+                <!-- Pickup Address -->
+                <div class="address-section">
+                    <div class="address-title">Pickup Address</div>
+                    <div class="address-text">
+                        <strong>{{ $pickup_location }}</strong><br>
+                
+                        <!-- <strong>Contact:</strong> (555) 987-6543 -->
+                    </div>
+                </div>
+                
+                <!-- Delivery Address -->
+                <div class="address-section">
+                    <div class="address-title">Delivery Address</div>
+                    <div class="address-text">
+                
+                        <strong>{{ $delivery_address }}</strong>
+                    </div>
+                </div>
 
             <!-- Order Details -->
             <div class="order-details">
@@ -298,7 +317,7 @@
     <div class="summary-row total-row">
         <span class="summary-label">Order Total:</span>
         <span class="summary-value">₦{{ number_format(array_sum(array_map(function ($item) {
-return $item['price'] * $item['quantity']; }, $orderItems))) }}</span>
+    return $item['price'] * $item['quantity']; }, $orderItems))) }}</span>
     </div>
 </div>
 </div>
@@ -309,7 +328,7 @@ return $item['price'] * $item['quantity']; }, $orderItems))) }}</span>
             @foreach($orderItems as $item)
                 <div class="item-card">
                     <div class="item-image">
-                        <img src="{{ $item['image'] }}" alt="{{ $item['menu_name'] }}" />
+                        <img width="200" src="{{ $item['image'] }}" alt="{{ $item['menu_name'] }}" />
                     </div>
                     <div class="item-details">
                         <div class="item-name">{{ $item['menu_name'] }}</div>
@@ -333,7 +352,7 @@ return $item['price'] * $item['quantity']; }, $orderItems))) }}</span>
                     <span class="summary-label">Order Total:</span>
                     <span
                         class="summary-value">₦{{ number_format(array_sum(array_map(function ($item) {
-return $item['price'] * $item['quantity']; }, $orderItems))) }}</span>
+    return $item['price'] * $item['quantity']; }, $orderItems))) }}</span>
                 </div>
             </div>
         </div>
@@ -356,24 +375,7 @@ return $item['price'] * $item['quantity']; }, $orderItems))) }}</span>
          
             </div>
 
-            <!-- Pickup Address -->
-            <div class="address-section">
-                <div class="address-title">Pickup Address</div>
-                <div class="address-text">
-                    <strong>{{ $pickup_location }}</strong><br>
-
-                    <!-- <strong>Contact:</strong> (555) 987-6543 -->
-                </div>
-            </div>
-
-            <!-- Delivery Address -->
-            <div class="address-section">
-                <div class="address-title">Delivery Address</div>
-                <div class="address-text">
-                
-                    <strong>{{ $delivery_address }}</strong>
-                </div>
-            </div>
+     
 
             <!-- Action Buttons -->
             <!-- <div class="action-buttons">

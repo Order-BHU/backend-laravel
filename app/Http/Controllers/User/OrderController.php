@@ -511,10 +511,10 @@ class OrderController extends Controller
                 $brevo->sendMail(
                     $email,
                     'Driver Assigned',
-                    'You Have An Order',
+                    'You Have An Order '. $restaurantDetails->name,
                     $htmlContent,
                     config("mail.from.address", "support@bhuorder.com"),  // from email
-                    'Onrder'             // from name
+                    'Order'             // from name
                 );
 
 

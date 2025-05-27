@@ -51,14 +51,14 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
 
                 // Admin Access routes
                 Route::get('all-orders', 'OrderController@allOrders');
-                Route::post('update-order', 'OrderController@updateOrder');
+                Route::post('update-order/{orderId}', 'OrderController@updateOrder');
                 Route::get('{status}/driver-list', 'OrderController@driverList');
 
                 // Order routes
                 Route::post('{restaurantId}/initialize-checkout', 'OrderController@initializeCheckout');
                 Route::post('{restaurantId}/checkout', 'OrderController@checkout');
                 Route::post('{status}/driver-status-update', 'OrderController@driverStatusUpdate');
-                Route::post('{orderId}/update-order-status', 'OrderController@updateOrderStatus');
+                Route::post('{orderId}/{status}/update-order-status', 'OrderController@updateOrderStatus');
                 Route::get('/track-order', 'OrderController@trackOrder');
 
 

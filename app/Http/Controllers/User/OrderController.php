@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Models\DriverTransfers;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Controller;
+use App\Services\BrevoMailer;
 use Illuminate\Http\Request;
 use App\Models\Restaurant;
 use App\Models\Order;
@@ -419,7 +420,7 @@ class OrderController extends Controller
         }
     }
 
-    public function updateOrderStatus(Request $request, $orderId, $status)
+    public function updateOrderStatus(Request $request, $orderId, $status, BrevoMailer $brevo)
     {
         if ($request->user()->account_type == 'restaurant') {
             if ($status == 'accepted') {
@@ -483,6 +484,41 @@ class OrderController extends Controller
                 // Assign the order to the available driver
                 $order->driver_id = $availableDriver;
                 $order->save();
+
+                $driverDetails = User::find($availableDriver);
+                $customerDetails = User::find($order->user_id);
+                $restaurantDetails = Restaurant::find($order->restaurant_id);
+
+                $details = [
+                    'order_id'=> $order->id,
+                    'order_date'=> $order->created_at->format('Y-m-d H:i:s'),
+                    'orderItems' => $order->items,
+                    'customer_name' => $customerDetails->name,
+                    'customer_phone' => $customerDetails->phone_number,
+                    'customer_email' => $customerDetails->email,
+                    'pickup_location' => $restaurantDetails->name,
+                    'delivery_address' => $order->customer_location,
+
+
+                ];
+
+                $htmlContent = view('emails.user.order', $details)->render();
+
+
+
+                $email = $driverDetails->email;
+
+                $brevo->sendMail(
+                    $email,
+                    'Driver Assigned',
+                    'You Have An Order',
+                    $htmlContent,
+                    config("mail.from.address", "support@bhuorder.com"),  // from email
+                    'Onrder'             // from name
+                );
+
+
+
 
                 return response()->json([
                     'message' => 'Status updated successfully',

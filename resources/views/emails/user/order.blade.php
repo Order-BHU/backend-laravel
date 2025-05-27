@@ -307,40 +307,7 @@
                     <span class="detail-value">$12.50</span>
                 </div> -->
             </div>
-        <!-- Order Items -->
-        <div class="order-items">
-<h3 style="margin-bottom: 15px; color: #495057;">🍽️ Order Items</h3>
-@foreach($orderItems as $item)
-<div class="item-card">
-    <div class="item-image">
-        <!-- <img src="{{ $item['image'] }}" alt="{{ $item['menu_name'] }}" /> -->
-    </div>
-    <div class="item-details">
-        <div class="item-name">{{ $item['menu_name'] }}</div>
-        <div class="item-info">
-            <span class="item-quantity">Qty: {{ $item['quantity'] }}</span>
-            <span class="item-price">₦{{ number_format($item['price']) }}</span>
-        </div>
-        <div class="item-total">
-            Total: ₦{{ number_format($item['price'] * $item['quantity']) }}
-        </div>
-    </div>
-</div>
-@endforeach
-
-<div class="order-summary">
-    <div class="summary-row">
-        <span class="summary-label">Total Items:</span>
-        <span class="summary-value">{{ array_sum(array_column($orderItems, 'quantity')) }}</span>
-    </div>
-    <div class="summary-row total-row">
-        <span class="summary-label">Order Total:</span>
-        <span class="summary-value">₦{{ number_format(array_sum(array_map(function ($item) {
-    return $item['price'] * $item['quantity']; }, $orderItems))) }}</span>
-    </div>
-</div>
-</div>
-
+    
         <!-- Order Items -->
         <div class="order-items">
             <h3 style="margin-bottom: 15px; color: #495057;">🍽️ Order Items</h3>

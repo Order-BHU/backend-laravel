@@ -510,7 +510,7 @@
                         </div>
                     @endforeach
 
-                    <div class="order-summary">
+                    <!-- <div class="order-summary">
                         <div class="summary-row">
                             <span class="summary-label">Total Items:</span>
                             <span class="summary-value">{{ array_sum(array_column($orderItems, 'quantity')) }}</span>
@@ -521,7 +521,7 @@
                                 class="summary-value">₦{{ number_format(array_sum(array_map(function ($item) {
     return $item['price'] * $item['quantity']; }, $orderItems))) }}</span>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
 

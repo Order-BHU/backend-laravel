@@ -191,6 +191,7 @@ class ProfileController extends Controller
             $pendingOrders = Order::where('status', 'pending')->count();
             $acceptedOrders = Order::where('status', 'accepted')->count();
             $deliveringOrders = Order::where('status', 'delivering')->count();
+            $readyOrders = Order::where('status', 'ready')->count();
             $completedOrders = Order::where('status', 'completed')->count();
 
             // User activity metrics
@@ -248,6 +249,7 @@ class ProfileController extends Controller
                 'order_metrics' => [
                     'pending' => $pendingOrders,
                     'accepted' => $acceptedOrders,
+                    'ready' => $readyOrders,
                     'delivering' => $deliveringOrders,
                     'completed' => $completedOrders
                 ],

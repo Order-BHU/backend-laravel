@@ -185,6 +185,8 @@ class OrderController extends Controller
         ], 200);
     }
 
+
+   
     public function myOrders(Request $request, $orderType)
     {
         // Checks the kind of user
@@ -776,5 +778,37 @@ class OrderController extends Controller
     ], 200);
 
 }
+
+    public function adminDriverStatusUpdate($status, $driverId)
+    {
+        // Checks if the user is an admin
+        if (auth()->user()->account_type != 'admin') {
+            return response()->json([
+                'message' => 'Unauthorized access'
+            ], 403);
+        }
+        // Validate the status
+        if (!in_array($status, ['online', 'offline'])) {
+            return response()->json([
+                'message' => 'Invalid status'
+            ], 400);
+        }
+        $driver = User::where('id', $driverId)->first();
+
+        if (!$driver) {
+            return response()->json([
+                'message' => 'Driver not found'
+            ], 404);
+        }
+
+        $driver->status = $status;
+        $driver->save();
+
+        return response()->json([
+            'message' => 'Driver Status Updated',
+            'status' => $driver->status
+        ], 200);
+    }
+
 
 }

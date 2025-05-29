@@ -53,6 +53,8 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
                 Route::get('all-orders', 'OrderController@allOrders');
                 Route::post('update-order/{orderId}', 'OrderController@updateOrder');
                 Route::get('{status}/driver-list', 'OrderController@driverList');
+                Route::post('{status}/{driverId}/driver-status-update', 'OrderController@adminDriverStatusUpdate');
+
 
                 // Order routes
                 Route::post('{restaurantId}/initialize-checkout', 'OrderController@initializeCheckout');

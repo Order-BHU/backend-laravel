@@ -305,16 +305,16 @@ class AuthController extends Controller
             $message->from(config("mail.from.address", "support@bhuorder.com"), 'Onboarding Team');
         });
 
-        $email = $request->email;
+     
 
-        $brevo->sendMail(
-            $email,
-            'Support Team',
-            'OTP from bhuorder',
-            $htmlContent,
-            config("mail.from.address", "support@bhuorder.com"),  // from email
-            'Onboarding Team'             // from name
-        );
+        // $brevo->sendMail(
+        //     $email,
+        //     'Support Team',
+        //     'OTP from bhuorder',
+        //     $htmlContent,
+        //     config("mail.from.address", "support@bhuorder.com"),  // from email
+        //     'Onboarding Team'             // from name
+        // );
 
 
 

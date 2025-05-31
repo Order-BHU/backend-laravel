@@ -302,7 +302,7 @@ class AuthController extends Controller
         Mail::send('emails.user.otp', $details, function ($message) use ($email) {
             $message->to($email)
                 ->subject('OTP from bhuorder');
-            $message->from(config("mail.from.address", "support@bhuorder.com"), 'Onboarding Team');
+            $message->from(config("mail.from.address", "support@bhuorder.com.ng"), 'Onboarding Team');
         });
 
      

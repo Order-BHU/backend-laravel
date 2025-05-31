@@ -297,8 +297,13 @@ class AuthController extends Controller
         ];
 
         $htmlContent = view('emails.user.otp', $details)->render();
+        $email = $request->email;
 
-
+        Mail::send('emails.user.otp', $details, function ($message) use ($email) {
+            $message->to($email)
+                ->subject('OTP from bhuorder');
+            $message->from(config("mail.from.address", "support@bhuorder.com"), 'Onboarding Team');
+        });
 
         $email = $request->email;
 

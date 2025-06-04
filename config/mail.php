@@ -110,7 +110,7 @@ return [
 
     // This changed the world
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'support@bhuorder@gmail.com.ng'),
+        'address' => env('MAIL_FROM_ADDRESS', 'support@bhuorder.com.ng'),
         'name' => env('MAIL_FROM_NAME', 'Order'),
     ],
 

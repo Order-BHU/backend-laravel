@@ -41,7 +41,7 @@ class ContactController extends Controller
 
         $brevo->sendMail(
             $user->email,          
-            'Support Team',             
+            $user->name,             
             $request->subject,                  
             $htmlContent,              
             config("mail.from.address", "support@bhuorder.com.ng"),  // from email

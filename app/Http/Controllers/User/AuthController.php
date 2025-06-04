@@ -67,7 +67,7 @@ class AuthController extends Controller
 
             $brevo->sendMail(
                 $user->email,
-                'Onboarding Team',
+                $user->name,
                 "OTP Request",
                 $htmlContent,
                 config("mail.from.address", "support@bhuorder.com.ng"),  // from email
@@ -153,7 +153,7 @@ class AuthController extends Controller
 
             $brevo->sendMail(
                 $user->email,
-                'Onboarding Team',
+                $user->name,
                 "OTP Request",
                 $htmlContent,
                 config("mail.from.address", "support@bhuorder.com.ng"),  // from email
@@ -231,7 +231,7 @@ class AuthController extends Controller
 
             $brevo->sendMail(
                 $user->email,
-                'Onboarding Team',
+                $user->name,
                 "OTP Request",
                 $htmlContent,
                 config("mail.from.address", "support@bhuorder.com.ng"),  // from email
@@ -303,7 +303,7 @@ class AuthController extends Controller
 
         $brevo->sendMail(
             $email,
-            'Support Team',
+            $user->name,
             'OTP from bhuorder',
             $htmlContent,
             config("mail.from.address", "support@bhuorder.com"),  // from email
@@ -542,7 +542,7 @@ class AuthController extends Controller
 
         $brevo->sendMail(
             $user->email,
-            'Support Team',
+            $user->name,
             'Password Reset Request',
             $htmlContent,
             config("mail.from.address", "support@bhuorder.com.ng"),

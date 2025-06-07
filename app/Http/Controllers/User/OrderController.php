@@ -37,7 +37,7 @@ class OrderController extends Controller
             'callback_id' => 'required'
         ]);
         $user = $request->user();
-        $fee =  200 * 100;
+        $fee =  300 * 100;
         $total = ($request->total * 100) + $fee;
         $restaurant = Restaurant::where('id', $restaurantId)->first();
         $response = Http::withHeaders([

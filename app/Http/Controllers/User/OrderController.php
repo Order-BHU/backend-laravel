@@ -160,14 +160,14 @@ class OrderController extends Controller
                 $email = User::where('id', 33)->first()->email;
 
                 // Send notification
-                $brevo->sendMail(
-                    $email,
-                    "Daniel Virgo",
-                    'You Have An Order '. $restaurantDetails->name,
-                    $htmlContent,
-                    config("mail.from.address", "support@bhuorder.com"),  // from email
-                    'Order'             // from name
-                );
+                // $brevo->sendMail(
+                //     $email,
+                //     "Daniel Virgo",
+                //     'You Have An Order '. $restaurantDetails->name,
+                //     $htmlContent,
+                //     config("mail.from.address", "support@bhuorder.com"),  // from email
+                //     'Order'             // from name
+                // );
 
                 }
 

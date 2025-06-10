@@ -16,6 +16,7 @@ use App\Models\Menu;
 use App\Models\Driver;
 use User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 
 
@@ -117,7 +118,7 @@ class PaymentController extends Controller
 
         } catch (\Exception $e) {
             // Log the error
-            \Log::error('Webhook processing error: ' . $e->getMessage());
+            Log::error('Webhook processing error: ' . $e->getMessage());
             return response()->json(['message' => 'Internal server error'], 500);
         }
     }
@@ -134,7 +135,7 @@ class PaymentController extends Controller
             }
         }
 
-        \DB::beginTransaction();
+        DB::beginTransaction();
 
         try {
             // Create transaction record
@@ -176,12 +177,12 @@ class PaymentController extends Controller
             // Send notifications (if needed)
             $this->sendOrderNotification($order, $metaData);
 
-            \DB::commit();
+            DB::commit();
 
             return response()->json(['message' => 'Charge processed successfully'], 200);
 
         } catch (\Exception $e) {
-            \DB::rollback();
+            DB::rollback();
             \Log::error('Charge processing error: ' . $e->getMessage());
             return response()->json(['message' => 'Failed to process charge'], 500);
         }
@@ -251,7 +252,7 @@ class PaymentController extends Controller
             // $brevo->sendMail(...);
 
         } catch (\Exception $e) {
-            \Log::error('Notification sending failed: ' . $e->getMessage());
+            Log::error('Notification sending failed: ' . $e->getMessage());
         }
     }
 

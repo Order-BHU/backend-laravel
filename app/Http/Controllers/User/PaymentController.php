@@ -15,6 +15,8 @@ use App\Models\Cart;
 use App\Models\Menu;
 use App\Models\Driver;
 use User;
+use Illuminate\Support\Facades\DB;
+
 
 
 class PaymentController extends Controller

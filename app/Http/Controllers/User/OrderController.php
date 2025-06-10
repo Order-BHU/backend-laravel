@@ -58,7 +58,7 @@ class OrderController extends Controller
                         'total' => $request->total,
                         'items' => $request->items,
                         'location' => $request->location,
-                        
+
                    
                         // anything else you want...
                     ]
@@ -79,17 +79,8 @@ class OrderController extends Controller
     {
         // Validates the checkout request
         $request->validate([
-            'items' => 'required|array',
-            'total' => 'required|numeric',
-            'location' => 'required',
             'reference' => 'required'
         ]);
-
-        // Converts the total amount to naira
-        $total = $request->total / 1000;
-
-        // Generate a random 6-character alphanumeric code
-        $randomCode = rand(1000, 9999);
 
         $user = $request->user();
 
@@ -109,80 +100,13 @@ class OrderController extends Controller
 
             $data = $response->json();
 
-
             // Checks if the payment was successful
             if ($data['status'] && $data['data']['status'] === 'success') {
+                return response([
+                    'message' => 'Payment Successful',
+                    'data' => $data
+                ], 200);
 
-
-                $transaction = Transactions::create([
-                    'customer_id' => $user->id,
-                    'restaurant_id' => $restaurantId,
-                    'amount' => $total,
-                    'type' => 'credit',
-                    'status' => 'completed',
-                    'reference' => $data['data']['reference'],
-                ]);
-
-                $wallet = Wallet::where('user_id', $restaurantId)->first();
-
-                $wallet->balance += $total;
-                $wallet->save();
-
-
-
-                // Creates a new order with the provided items, restaurant_id and user_id
-                $order = Order::create([
-                    'user_id' => $request->user()->id,
-                    'items' => $request->items,
-                    'restaurant_id' => $restaurantId,
-                    'total' => $total,
-                    'customer_location' => $request->location,
-                    'status' => 'pending',
-                    'code' => $randomCode,
-                ]);
-
-
-
-
-                if ($order) {
-                    // Removes the cart items for the restaurant
-                    Cart::where('user_id', $request->user()->id)->delete();
-
-                    // Update the user's otp column with the random code
-                    $order->code = $randomCode;
-                    $order->save();
-
-                    $restaurantDetails = Restaurant::where('id', $restaurantId)->first();
-
-                      $details = [
-                    'order_id'=> $order->id,
-                    'order_date'=> $order->created_at->format('Y-m-d H:i:s'),
-                    'orderItems' => $order->items,
-                    'customer_name' =>  $request->user()->name,
-                    'customer_phone' =>  $request->user()->phone_number,
-                    'customer_email' =>  $request->user()->email,
-                    'pickup_location' => $restaurantDetails->name,
-                    'delivery_address' => $order->customer_location,
-
-                ];
-
-                $htmlContent = view('emails.user.order', $details)->render();
-
-
-
-                $email = User::where('id', 33)->first()->email;
-
-                // Send notification
-                // $brevo->sendMail(
-                //     $email,
-                //     "Daniel Virgo",
-                //     'You Have An Order '. $restaurantDetails->name,
-                //     $htmlContent,
-                //     config("mail.from.address", "support@bhuorder.com"),  // from email
-                //     'Order'             // from name
-                // );
-
-                }
 
             } else {
                 return response([
@@ -190,17 +114,12 @@ class OrderController extends Controller
                     'data' => $data
                 ], 400);
             }
+
         } else {
             return response([
                 'message' => 'You have a pending order, complete your order to order again'
             ], 200);
         }
-
-        return response([
-            'message' => 'Checkout Successfully',
-            'order_id' => $order->id,
-            'code' => $randomCode
-        ], 200);
     }
 
     public function driverStatusUpdate($status)

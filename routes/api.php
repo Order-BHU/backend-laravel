@@ -27,6 +27,8 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
 
             Route::get('auth/google', 'AuthController@redirectToGoogle');
             Route::get('auth/google/callback', 'AuthController@handleGoogleCallback');
+            Route::post('/transfer-webhook', 'PaymentController@transferWebhook'); // Paystack transfer webhook
+
 
 
             Route::get('/categories', 'RestaurantController@categories');
@@ -78,7 +80,6 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
                 Route::get('/bank-list', 'PaymentController@bankList');
                 Route::post('/resolve-bank', 'PaymentController@resolveBank'); // Added resolve bank
                 Route::get('/transaction-list', 'PaymentController@transactionList');
-                Route::post('/transfer-webhook', 'PaymentController@transferWebhook'); // Paystack transfer webhook
 
                 // Contact routes
                 Route::post('/contact', 'ContactController@submitContact');

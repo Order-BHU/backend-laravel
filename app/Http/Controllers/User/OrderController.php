@@ -22,6 +22,12 @@ class OrderController extends Controller
 
     public function initializeCheckout(Request $request, $restaurantId)
     {
+        $request->validate([
+            'total' => 'required|numeric',
+            'callback_id' => 'required',
+            'items' => 'required|array',
+            'location' => 'required',
+        ]);
 
 
         $order = Order::where('user_id', auth()->user()->id)->where('status', '!=', 'completed')->first();
@@ -31,11 +37,8 @@ class OrderController extends Controller
                 'message' => 'You have a pending order, complete your order to order again'
             ])->setStatusCode(400);
         }
-
-        $request->validate([
-            'total' => 'required|numeric',
-            'callback_id' => 'required'
-        ]);
+    
+       
         $user = $request->user();
         $fee =  300 * 100;
         $total = ($request->total * 100) + $fee;
@@ -48,7 +51,17 @@ class OrderController extends Controller
                     'amount' => $total, // Amount in kobo
                     // 'subaccount' => $restaurant->subaccount_code, 
                     'transaction_charge' => $fee,   
-                    'callback_url' => 'https://bhuorder.com/menu/' . $request->callback_id
+                    'callback_url' => 'https://bhuorder.com/menu/' . $request->callback_id,
+                    'metadata' => [
+                        'user_id' => $user->id,
+                        'restaurant_id' => $restaurantId,
+                        'total' => $request->total,
+                        'items' => $request->items,
+                        'location' => $request->location,
+                        
+                   
+                        // anything else you want...
+                    ]
 
                 ]);
 

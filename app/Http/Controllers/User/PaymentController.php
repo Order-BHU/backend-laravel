@@ -183,7 +183,7 @@ class PaymentController extends Controller
 
         } catch (\Exception $e) {
             DB::rollback();
-            \Log::error('Charge processing error: ' . $e->getMessage());
+            Log::error('Charge processing error: ' . $e->getMessage());
             return response()->json(['message' => 'Failed to process charge'], 500);
         }
     }

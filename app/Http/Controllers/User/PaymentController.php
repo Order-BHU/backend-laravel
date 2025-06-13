@@ -191,12 +191,23 @@ class PaymentController extends Controller
     private function handleTransferSuccess($data)
     {
         $transfer = DriverTransfers::where('reference', $data['reference'])->first();
-        if ($transfer) {
+        if ($transfer && $transfer != 'success') {
             $transfer->status = 'success';
             if (isset($data['transfer_code'])) {
                 $transfer->transfer_code = $data['transfer_code'];
             }
             $transfer->save();
+
+            // Optionally, you can also update the driver's wallet or notify them
+            // Update wallet balance
+            $wallet = Wallet::where('user_id', $transfer->user_id)->first();
+            if (!$wallet) {
+                throw new \Exception('Wallet not found for restaurant');
+            }
+
+            $wallet->balance += $data['amount']; 
+            $wallet->save();
+
         }
 
         return response()->json(['message' => 'Transfer success processed'], 200);

@@ -544,21 +544,21 @@ class OrderController extends Controller
                             401);
                     }
 
-                    // $response = Http::withHeaders([
-                    //     'Authorization' => 'Bearer ' . env('PAYSTACK_SECRET_KEY'),
-                    //     'Content-Type' => 'application/json',
-                    // ])->post(env('PAYSTACK_PAYMENT_URL') . '/transfer', [
-                    //             "source" => "balance",
-                    //             "amount" => 180,
-                    //             "reference" => $reference,
-                    //             "recipient" => $driver->recipient_code,
-                    //             "reason" => "Delivery Completed"
-                    //         ]);
+                    $response = Http::withHeaders([
+                        'Authorization' => 'Bearer ' . env('PAYSTACK_SECRET_KEY'),
+                        'Content-Type' => 'application/json',
+                    ])->post(env('PAYSTACK_PAYMENT_URL') . '/transfer', [
+                                "source" => "balance",
+                                "amount" => 200,
+                                "reference" => $reference,
+                                "recipient" => $driver->recipient_code,
+                                "reason" => "Delivery Completed"
+                            ]);
 
-                    // $data = $response->json();
-                    // if (!$data['status']) {
-                    //     return response()->json(['error' => $data['message']], 400);
-                    // }
+                    $data = $response->json();
+                    if (!$data['status']) {
+                        return response()->json(['error' => $data['message']], 400);
+                    }
 
                     $driverTransfer = DriverTransfers::create([
                         'user_id'=>$order->driver_id,

@@ -393,7 +393,6 @@ class AuthController extends Controller
             ], 200)->cookie('token', $token, 60, '/', null, true, true);
         } else if ($user->account_type == 'admin') {
             $restaurants = Restaurant::all();
-            $customers = User::where('account_type', 'customer')->get();
             $completedOrders = Order::where('status', 'completed')->get();
 
             return response()->json([
@@ -403,7 +402,6 @@ class AuthController extends Controller
                 'name' => $user->name,
                 'account_type' => $user->account_type,
                 'restaurants' => $restaurants,
-                'customers' => $customers,
                 'token' => $token
             ], 200)->cookie('token', $token, 60, '/', null, true, true);
 

@@ -549,7 +549,7 @@ class OrderController extends Controller
                         'Content-Type' => 'application/json',
                     ])->post(env('PAYSTACK_PAYMENT_URL') . '/transfer', [
                                 "source" => "balance",
-                                "amount" => 200,
+                                "amount" => 190*100, // Amount in kobo
                                 "reference" => $reference,
                                 "recipient" => $driver->recipient_code,
                                 "reason" => "Delivery Completed"

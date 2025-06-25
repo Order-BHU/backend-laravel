@@ -16,7 +16,7 @@ class RestaurantController extends Controller
     public function restaurantList()
     {
        $allRestaurants = Restaurant::select('id', 'name', 'logo')
-    ->whereIn('id', [14])
+    ->where('status', 'active')
     ->get();
 
         // Update the logo field to include the full URL path
@@ -229,4 +229,41 @@ class RestaurantController extends Controller
             'menu' => $menu
         ]);
     }
+
+
+    public function updateRestaurantStatus(Request $request, $restaurantId)
+    {
+        // Check if the user is authenticated and has the right permissions
+        $user = auth()->user();
+
+        if($user->account_type != 'admin') {
+            return response()->json([
+                'message' => 'Unauthorized action.'
+            ], 403);
+        }
+        
+        // Validate the request, expecting a boolean for 'status'
+        $data = $request->validate([
+            'status' => 'required|in:active,inactive',
+        ]);
+
+        // Fetch the restaurant
+        $restaurant = Restaurant::findOrFail($restaurantId);
+        if (!$restaurant) {
+            return response()->json([
+                'message' => 'Restaurant not found.'
+            ], 404);
+        }    
+
+        // Update the status
+        $restaurant->status = $data['status'];
+        $restaurant->save();
+
+        return response()->json([
+            'message' => 'Restaurant status updated successfully',
+            'restaurant' => $restaurant
+        ]);
+    }
+
+        
 }

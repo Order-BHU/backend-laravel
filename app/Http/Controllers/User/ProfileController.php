@@ -268,13 +268,13 @@ class ProfileController extends Controller
                         'name' => $restaurant->name,
                         'status'=> $restaurant->status,
                         'total_orders' => $restaurant->completed_count,
-                        'pending_orders' => $restaurant->pending_count,
+                        // 'pending_orders' => $restaurant->pending_count,
                         'total_revenue' => $restaurant->orders->first()->total_revenue ?? 0,
-                        'wallet_balance' => Wallet::where('user_id', $restaurant->id)
-                            ->value('balance') ?? 0,
-                        'average_order_value' => $restaurant->completed_count > 0
-                            ? ($restaurant->orders->first()->total_revenue / $restaurant->completed_count)
-                            : 0
+                        // 'wallet_balance' => Wallet::where('user_id', $restaurant->id)
+                        //     ->value('balance') ?? 0,
+                        // 'average_order_value' => $restaurant->completed_count > 0
+                        //     ? ($restaurant->orders->first()->total_revenue / $restaurant->completed_count)
+                        //     : 0
                     ];
                 }),
 

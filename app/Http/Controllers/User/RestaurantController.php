@@ -15,7 +15,7 @@ class RestaurantController extends Controller
 {
     public function restaurantList()
     {
-       $allRestaurants = Restaurant::select('id', 'name', 'logo')
+       $allRestaurants = Restaurant::select('id', 'name', 'logo', 'status')
     ->where('status', 'active')
     ->get();
 
@@ -241,7 +241,7 @@ class RestaurantController extends Controller
                 'message' => 'Unauthorized action.'
             ], 403);
         }
-        
+
         // Validate the request, expecting a boolean for 'status'
         $data = $request->validate([
             'status' => 'required|in:active,inactive',

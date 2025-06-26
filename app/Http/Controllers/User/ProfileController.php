@@ -148,7 +148,7 @@ class ProfileController extends Controller
                     'this_week' => $weeklyEarnings,
                     'this_month' => $monthlyEarnings,
                     'total' => $totalDeliveries * 180, // Assuming 180 is the fixed delivery fee
-                    'wallet_balance' => $wallet ? $wallet->balance : 0
+                    'wallet_balance' => $wallet ? $wallet->balance/100 : 0
                 ],
                 'recent_deliveries' => $recentDeliveries->map(function ($order) {
                     $restaurant = Restaurant::where('id', $order->restaurant_id)->first();
@@ -266,6 +266,7 @@ class ProfileController extends Controller
                     return [
                         'id' => $restaurant->id,
                         'name' => $restaurant->name,
+                        'status'=> $restaurant->status,
                         'total_orders' => $restaurant->completed_count,
                         'pending_orders' => $restaurant->pending_count,
                         'total_revenue' => $restaurant->orders->first()->total_revenue ?? 0,

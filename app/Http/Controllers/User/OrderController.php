@@ -49,8 +49,8 @@ class OrderController extends Controller
         ])->post('https://api.paystack.co/transaction/initialize', [
                     'email' => $user->email,
                     'amount' => $total, // Amount in kobo
-                    'subaccount' => $restaurant->subaccount_code, 
-                    'transaction_charge' => $fee,   
+                    // 'subaccount' => $restaurant->subaccount_code, 
+                    // 'transaction_charge' => $fee,   
                     'callback_url' => 'https://bhuorder.com/menu/' . $request->callback_id,
                     'metadata' => [
                         'user_id' => $user->id,

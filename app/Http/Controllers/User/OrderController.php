@@ -43,27 +43,50 @@ class OrderController extends Controller
         $fee =  300 * 100;
         $total = ($request->total * 100) + $fee;
         $restaurant = Restaurant::where('id', $restaurantId)->first();
+        // $response = Http::withHeaders([
+        //     'Authorization' => 'Bearer ' . env('PAYSTACK_SECRET_KEY'),
+        //     'Content-Type' => 'application/json',
+        // ])->post('https://api.paystack.co/transaction/initialize', [
+        //             'email' => $user->email,
+        //             'amount' => $total, // Amount in kobo
+        //             'subaccount' => $restaurant->subaccount_code, 
+        //             'transaction_charge' => $fee,   
+        //             'callback_url' => 'https://bhuorder.com/menu/' . $request->callback_id,
+        //             'metadata' => [
+        //                 'user_id' => $user->id,
+        //                 'restaurant_id' => $restaurantId,
+        //                 'total' => $request->total,
+        //                 'items' => $request->items,
+        //                 'location' => $request->location,
+
+                   
+        //                 // anything else you want...
+        //             ]
+
+        //         ]);
+
+        $payload = [
+            'email' => $user->email,
+            'amount' => $total, // Amount in kobo
+            'callback_url' => 'https://bhuorder.com/menu/' . $request->callback_id,
+            'metadata' => [
+                'user_id' => $user->id,
+                'restaurant_id' => $restaurantId,
+                'total' => $request->total,
+                'items' => $request->items,
+                'location' => $request->location,
+            ]
+        ];
+
+        if ($restaurant->subaccount_code != 'ACCT_jp7jqu2rrbpo139') {
+            $payload['subaccount'] = $restaurant->subaccount_code;
+            $payload['transaction_charge'] = $fee; // optional if you're taking a commission
+        }
+
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . env('PAYSTACK_SECRET_KEY'),
             'Content-Type' => 'application/json',
-        ])->post('https://api.paystack.co/transaction/initialize', [
-                    'email' => $user->email,
-                    'amount' => $total, // Amount in kobo
-                    'subaccount' => $restaurant->subaccount_code, 
-                    'transaction_charge' => $fee,   
-                    'callback_url' => 'https://bhuorder.com/menu/' . $request->callback_id,
-                    'metadata' => [
-                        'user_id' => $user->id,
-                        'restaurant_id' => $restaurantId,
-                        'total' => $request->total,
-                        'items' => $request->items,
-                        'location' => $request->location,
-
-                   
-                        // anything else you want...
-                    ]
-
-                ]);
+        ])->post('https://api.paystack.co/transaction/initialize', $payload);
 
 
         $data = $response->json();
@@ -675,7 +698,7 @@ class OrderController extends Controller
             ], 403);
         }
 
-        $orders = Order::with(['user', 'driver'])
+        $orders = Order::with(['user', 'driver', 'restaurant'])
         ->orderBy('created_at', 'desc')
         ->get();
 

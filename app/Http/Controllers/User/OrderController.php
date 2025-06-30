@@ -194,7 +194,7 @@ class OrderController extends Controller
 
             if ($orderType == 'pending') {
                 $orders = Order::where('restaurant_id', $restaurant->id)
-                    ->where('status', 'pending')->get();
+                    ->where('status', 'pending')->with('user')->get();
 
                 return response()->json([
                     'orders' => $orders,

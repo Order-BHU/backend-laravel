@@ -58,7 +58,7 @@ class CartController extends Controller
     }
 
     public function removeCartItem(Request $request,$menuId){
-        $cartItem = Cart::where('menu_id',$menuId)->first();
+        $cartItem = Cart::where('user_id',$request->user()->id)->where('menu_id', $menuId)->first();
 
         if(!$cartItem) {
             return response()->json([

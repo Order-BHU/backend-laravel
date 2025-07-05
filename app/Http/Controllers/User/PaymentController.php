@@ -22,6 +22,11 @@ use Illuminate\Support\Facades\Log;
 
 class PaymentController extends Controller
 {
+    public function __construct(private BrevoMailer $brevo)
+    {
+        $this->brevo = $brevo;
+    }
+
     public function bankList()
     {
 
@@ -175,7 +180,7 @@ class PaymentController extends Controller
             Cart::where('user_id', $metaData['user_id'])->delete();
 
             // Send notifications (if needed)
-            // $this->sendOrderNotification($order, $metaData);
+            $this->sendOrderNotification($order, $metaData, $this->brevo);
 
             DB::commit();
 

@@ -235,7 +235,7 @@ class PaymentController extends Controller
         return response()->json(['message' => 'Transfer reversal processed'], 200);
     }
 
-    private function sendOrderNotification($order, $metaData)
+    private function sendOrderNotification($order, $metaData, BrevoMailer $brevo)
     {
         try {
             $restaurantDetails = Restaurant::find($metaData['restaurant_id']);
@@ -259,141 +259,22 @@ class PaymentController extends Controller
             $htmlContent = view('emails.user.order', $details)->render();
 
             // Uncomment and configure your email service
-            // $email = User::find(33)->email;
-            // $brevo->sendMail(...);
+            $email = User::where('account_type', 'admin')->pluck('email');
+            foreach ($email as $recipient) {
+                $brevo->sendMail(
+                    $recipient,
+                    'Admin',
+                    'New Order',
+                  $htmlContent,
+                  config("mail.from.address", "support@bhuorder.com"),
+                  'BHU Order',
+                );
+            }
+        
 
         } catch (\Exception $e) {
             Log::error('Notification sending failed: ' . $e->getMessage());
         }
     }
 
-    // public function transferWebhook(Request $request)
-    // {
-    //     // Verify the webhook signature
-    //     $signature = $request->header('x-paystack-signature');
-    //     $payload = $request->getContent();
-        
-    //     // Verify the signature
-    //     $hash = hash_hmac('sha512', $payload, env('PAYSTACK_SECRET_KEY'));
-        
-    //     if ($hash !== $signature) {
-    //         return response()->json(['message' => 'Invalid signature'], 400);
-    //     }
-
-    //     $event = $request->input('event');
-    //     $data = $request->input('data');
-    //     $metaData = $data['metadata'] ?? [];
-
-    //     // Handle different transfer events
-    //     switch ($event) {
-    //         case 'charge.success':
-    //             $transaction = Transactions::create([
-    //                 'customer_id' => $metaData['user_id'],
-    //                 'restaurant_id' => $metaData['restaurant_id'],
-    //                 'amount' => $metaData['total'],
-    //                 'type' => 'credit',
-    //                 'status' => 'completed',
-    //                 'reference' => $data['data']['reference'],
-    //             ]);
-
-    //             $wallet = Wallet::where('user_id', $metaData['restaurant_id'])->first();
-
-    //             $wallet->balance += $metaData['total'];
-    //             $wallet->save();
-
-    //             // Generate a random code for the order
-    //              $randomCode = rand(1000, 9999);
-
-
-
-
-    //             // Creates a new order with the provided items, restaurant_id and user_id
-    //             $order = Order::create([
-    //                 'user_id' => $metaData['user_id'],
-    //                 'items' => $metaData['items'],
-    //                 'restaurant_id' => $metaData['restaurant_id'],
-    //                 'total' => $metaData['total'],
-    //                 'customer_location' => $metaData['location'],
-    //                 'status' => 'pending',
-    //                 'code' => $randomCode,
-    //             ]);
-
-
-
-
-    //             if ($order) {
-    //                 // Removes the cart items for the restaurant
-    //                 Cart::where('user_id', $metaData['user_id'])->delete();
-
-    //                 // Update the user's otp column with the random code
-    //                 $order->code = $randomCode;
-    //                 $order->save();
-
-    //                 $restaurantDetails = Restaurant::where('id', $metaData['restaurant_id'])->first();
-    //                 $user = User::where('id', $metaData['user_id'])->first();
-
-    //                 $details = [
-    //                     'order_id' => $order->id,
-    //                     'order_date' => $order->created_at->format('Y-m-d H:i:s'),
-    //                     'orderItems' => $order->items,
-    //                     'customer_name' => $user->name,
-    //                     'customer_phone' => $user->phone_number,
-    //                     'customer_email' => $user->email,
-    //                     'pickup_location' => $restaurantDetails->name,
-    //                     'delivery_address' => $order->customer_location,
-
-    //                 ];
-
-    //                 $htmlContent = view('emails.user.order', $details)->render();
-
-
-
-    //                 $email = User::where('id', 33)->first()->email;
-
-    //                 // Send notification
-    //                 // $brevo->sendMail(
-    //                 //     $email,
-    //                 //     "Daniel Virgo",
-    //                 //     'You Have An Order '. $restaurantDetails->name,
-    //                 //     $htmlContent,
-    //                 //     config("mail.from.address", "support@bhuorder.com"),  // from email
-    //                 //     'Order'             // from name
-    //                 // );
-
-    //             }
-    //             break;
-
-
-    //         case 'transfer.success':
-    //             $transfer = DriverTransfers::where('reference', $data['reference'])->first();
-    //             if ($transfer) {
-    //                 $transfer->status = 'success';
-    //                 $transfer->save();
-    //             }
-    //             break;
-
-    //         case 'transfer.failed':
-    //             $transfer = DriverTransfers::where('reference', $data['reference'])->first();
-    //             if ($transfer) {
-    //                 $transfer->status = 'failed';
-    //                 $transfer->save();
-    //             }
-    //             break;
-
-    //         case 'transfer.reversed':
-    //             $transfer = DriverTransfers::where('reference', $data['reference'])->first();
-    //             if ($transfer) {
-    //                 $transfer->status = 'reversed';
-    //                 $transfer->save();
-    //             }
-    //             break;
-    //     }
-
-    //     $transferCode = $request->input('transfer_code');
-    //     $transfer->transfer_code = $transferCode;
-    //     $transfer->save();
-        
-
-    //     return response()->json(['message' => 'Webhook processed successfully'], 200);
-    // }
 }

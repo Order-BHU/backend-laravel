@@ -180,7 +180,7 @@ class PaymentController extends Controller
             Cart::where('user_id', $metaData['user_id'])->delete();
 
             // Send notifications (if needed)
-            $this->sendOrderNotification($order, $metaData, $this->brevo);
+            // $this->sendOrderNotification($order, $metaData, $this->brevo);
 
             DB::commit();
 

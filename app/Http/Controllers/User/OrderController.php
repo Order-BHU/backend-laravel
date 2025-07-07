@@ -12,6 +12,7 @@ use App\Models\Order;
 use App\Models\Cart;
 use App\Models\Menu;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Str;
 use App\Models\Transactions;
 use App\Models\Wallet;
@@ -698,9 +699,14 @@ class OrderController extends Controller
             ], 403);
         }
 
+        // $orders = Order::with(['user', 'driver', 'restaurant'])
+        // ->orderBy('created_at', 'desc')
+        // ->get();
+
         $orders = Order::with(['user', 'driver', 'restaurant'])
-        ->orderBy('created_at', 'desc')
-        ->get();
+            ->whereDate('created_at', Carbon::today())
+            ->orderBy('created_at', 'desc')
+            ->get();
 
 
         return response()->json([

@@ -180,7 +180,7 @@ class PaymentController extends Controller
             Cart::where('user_id', $metaData['user_id'])->delete();
 
             // Send notifications (if needed)
-            // $this->sendOrderNotification($order, $metaData, $this->brevo);
+            $this->sendOrderNotification($order, $metaData, $this->brevo);
 
             DB::commit();
 
@@ -244,6 +244,7 @@ class PaymentController extends Controller
     {
         try {
             $restaurantDetails = Restaurant::find($metaData['restaurant_id']);
+            Log::info('metaData: ' . json_encode($metaData));
             $user = User::where('id',$metaData['user_id'])->first();
 
             if (!$restaurantDetails || !$user) {

@@ -549,6 +549,12 @@ class OrderController extends Controller
                         'message' => 'Order not found or not ready'
                     ], 404);
                 }
+                
+                if($order->status == 'completed'){
+                    return response()->json([
+                        'message' => 'Order already completed'
+                    ], 400);
+                }
 
                 $driver = Driver::where('user_id',$order->driver_id)->first();
 

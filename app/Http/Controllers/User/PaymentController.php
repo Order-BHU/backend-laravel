@@ -244,7 +244,6 @@ class PaymentController extends Controller
     {
         try {
             $restaurantDetails = Restaurant::find($metaData['restaurant_id']);
-            Log::info('metaData: ' . json_encode($metaData));
             $user = User::where('id',$metaData['user_id'])->first();
 
             if (!$restaurantDetails || !$user) {

@@ -14,7 +14,7 @@ use App\Models\Order;
 use App\Models\Cart;
 use App\Models\Menu;
 use App\Models\Driver;
-use User;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 

@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['https://bhuorder.com', 'www.bhuorder.com'],
+    'allowed_origins' => ['https://bhuorder.com', 'www.bhuorder.com','http://localhost:7243'],
 
     'allowed_origins_patterns' => [],
 

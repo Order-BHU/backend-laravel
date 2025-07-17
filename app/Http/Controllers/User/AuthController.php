@@ -329,10 +329,12 @@ class AuthController extends Controller
                 'message' => 'User not registered, Please Login',
             ], 401);
         }
+        
         // User not yet verified
         if ($user->activated != 1) {
             return response()->json([
-                'message' => 'User not yet verified, please verify user'
+                'message' => 'User not yet verified, please verify user',
+                'token' => $user->createToken('auth_token')->plainTextToken
             ], 401);
         }
 

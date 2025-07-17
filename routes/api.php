@@ -19,7 +19,6 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
             Route::post('/register', 'AuthController@register');
             Route::post('/login', 'AuthController@login');
             Route::post('/verify-user', 'AuthController@verifyUser');
-            Route::post('/get-otp', 'AuthController@getOtp');
             Route::post('/forgot-password', 'AuthController@forgotPassword');
             Route::post('/reset-password', 'AuthController@resetPassword');
             Route::get('locations', 'ProfileController@getLocations');
@@ -70,6 +69,7 @@ Route::namespace('App\Http\Controllers\User')->group(function () {
 
                 // Authentication routes
                 Route::post('/logout', 'AuthController@logout');
+                Route::post('/get-otp', 'AuthController@getOtp')->middleware('throttle:10,1');
                 Route::get('/dashboard', 'ProfileController@myDashboard');
                 Route::post('/update-profile-picture', 'ProfileController@updateProfilePicture');
                 Route::post('/update-cover-picture', 'ProfileController@updateCoverPicture');

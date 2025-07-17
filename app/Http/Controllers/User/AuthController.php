@@ -277,15 +277,8 @@ class AuthController extends Controller
 
     public function getOtp(Request $request, BrevoMailer $brevo)
     {
-        // Validate the request with unique token 
-        
-        $request->validate([
-            'email' => 'required|string|email|max:255|exists:users',
-        ]);
-
-
-        $user = User::where("email", $request->email)->first();
-
+        // Get authenticated user
+        $user = $request->user();
         // Generate OTP
         $otp = rand(1000, 9999);
 
@@ -293,7 +286,7 @@ class AuthController extends Controller
         $user->save();
 
         $details = [
-            "name" => $request->name,
+            "name" => $user->name,
             "otp" => $otp
 
         ];
@@ -301,7 +294,7 @@ class AuthController extends Controller
         $htmlContent = view('emails.user.otp', $details)->render();
 
         
-        $email = $request->email;
+        $email = $user->email;
 
         $brevo->sendMail(
             $email,

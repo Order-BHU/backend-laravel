@@ -16,7 +16,7 @@ Route::get('/test', function () {
 
 Route::namespace('App\Http\Controllers\User')->group(function () {
 
-            Route::post('/register', 'AuthController@register');
+            Route::post('/register', 'AuthController@register')->middleware('throttle:1, 120392');
             Route::post('/login', 'AuthController@login');
             Route::post('/verify-user', 'AuthController@verifyUser');
             Route::post('/forgot-password', 'AuthController@forgotPassword');

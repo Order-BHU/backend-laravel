@@ -277,6 +277,8 @@ class AuthController extends Controller
 
     public function getOtp(Request $request, BrevoMailer $brevo)
     {
+        // Validate the request with unique token 
+        
         $request->validate([
             'email' => 'required|string|email|max:255|exists:users',
         ]);

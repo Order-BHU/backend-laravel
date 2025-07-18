@@ -36,8 +36,20 @@ class AuthController extends Controller
                 'password' => 'required|string|min:8',
                 'phone_number' => 'required|numeric|unique:users',
                 'phone_number_type' => 'required|in:whatsapp,sms,both',
-                'account_type' => 'required|in:customer,driver'
+                'account_type' => 'required|in:customer,driver',
+                'g-recaptcha-response' => 'required' // Add reCAPTCHA validation
             ]);
+
+            // verify reCAPTCHA(manuaally)
+            $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+                'secret' => config('services.recaptcha.secret'),
+                'response' => $request->input('g-recaptcha-response'),
+            ]);
+
+
+            if (!$response->json()['success']) {
+                return response()->json(['error' => 'reCAPTCHA verification failed'], 400);
+            }
 
             // Generate OTP
             $otp = rand(1000, 9999);

@@ -69,7 +69,6 @@ class AuthController extends Controller
 
 
             $details = [
-                "name" => $request->name,
                 "otp" => $otp
 
             ];

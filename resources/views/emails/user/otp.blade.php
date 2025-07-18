@@ -9,7 +9,7 @@
     <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 40px; border-radius: 8px; margin-top: 40px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
         
         
-        <h1 style="color: #333333; font-size: 24px; margin-bottom: 20px; text-align: center;">Hey {{$name}}! Verify Your Identity</h1>
+        <h1 style="color: #333333; font-size: 24px; margin-bottom: 20px; text-align: center;">Verify Your Identity!</h1>
         
         <p style="color: #666666; font-size: 16px; margin-bottom: 30px; text-align: center;">
             Use the following OTP code to complete your verification process.

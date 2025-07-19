@@ -288,8 +288,18 @@ class AuthController extends Controller
 
     public function getOtp(Request $request, BrevoMailer $brevo)
     {
-        // Get authenticated user
-        $user = $request->user();
+        $request->validate([
+            'email' => 'required|string|email|max:255|exists:users',
+        ]);
+
+        // Authenticate user by access key in env 
+        if (env('ACCESS_KEY') != $request->header('Authorization')) {
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
+        }
+
+        $user = User::where('email', $request->email)->first();
         // Generate OTP
         $otp = rand(1000, 9999);
 
@@ -297,9 +307,7 @@ class AuthController extends Controller
         $user->save();
 
         $details = [
-            "name" => $user->name,
             "otp" => $otp
-
         ];
 
         $htmlContent = view('emails.user.otp', $details)->render();
